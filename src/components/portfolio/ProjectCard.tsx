@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, KeyboardEvent } from 'react'
+import { play } from 'cuelume'
 import type { Project } from '@/data/projects'
 import { cn } from '@/lib/utils'
 
@@ -17,11 +18,20 @@ export function ProjectCard({
   style,
   onSelect,
 }: ProjectCardProps) {
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (!revealed) return
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    if (event.repeat) return
+    play('toggle')
+  }
+
   return (
     <button
       type="button"
       data-testid={`project-card-${project.id}`}
       data-project-id={project.id}
+      data-cuelume-hover="tick"
+      data-cuelume-press=""
       aria-current={active ? 'true' : undefined}
       aria-hidden={revealed ? undefined : true}
       tabIndex={revealed ? 0 : -1}
@@ -29,6 +39,7 @@ export function ProjectCard({
         if (!revealed) return
         onSelect?.(project.id)
       }}
+      onKeyDown={handleKeyDown}
       className={cn(
         'project-card flex w-full items-center gap-3 rounded-sm border p-4 text-left',
         'border-[color:var(--color-border)] bg-[color:var(--color-card)]',

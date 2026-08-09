@@ -20,14 +20,20 @@ export function ProjectCard({
     <button
       type="button"
       data-testid={`project-card-${project.id}`}
+      data-project-id={project.id}
       aria-current={active ? 'true' : undefined}
-      onClick={() => onSelect?.(project.id)}
+      aria-hidden={revealed ? undefined : true}
+      tabIndex={revealed ? 0 : -1}
+      onClick={() => {
+        if (!revealed) return
+        onSelect?.(project.id)
+      }}
       className={[
         'flex w-full items-center gap-3 rounded-sm border p-4 text-left transition-[opacity,transform,background-color,border-color] duration-500 ease-out',
         active
           ? 'border-[color:var(--color-ink)]/25 bg-[#ebe9e3]'
           : 'border-[color:var(--color-border)] bg-[color:var(--color-card)]',
-        revealed ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
+        revealed ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
       ].join(' ')}
       style={style}
     >

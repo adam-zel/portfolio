@@ -5,12 +5,14 @@ type UseActiveProjectOptions = {
   projects: Project[]
   scrollRoot: HTMLElement | null
   enabled?: boolean
+  reducedMotion?: boolean
 }
 
 export function useActiveProject({
   projects,
   scrollRoot,
   enabled = true,
+  reducedMotion = false,
 }: UseActiveProjectOptions) {
   const [activeProjectId, setActiveProjectId] = useState(
     projects[0]?.id ?? '',
@@ -62,7 +64,10 @@ export function useActiveProject({
     const target = scrollRoot?.querySelector(
       `#${CSS.escape(mediaElementId(projectId))}`,
     )
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    target?.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    })
   }
 
   return {

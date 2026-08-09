@@ -25,6 +25,16 @@ export function useCardReveal({
       return
     }
 
+    const root = document.querySelector('[data-testid="project-list"]')
+
+    if (
+      !(root instanceof HTMLElement) ||
+      root.scrollHeight <= root.clientHeight + 1
+    ) {
+      setRevealedIds(new Set(projects.map((project) => project.id)))
+      return
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         setRevealedIds((current) => {
@@ -40,16 +50,35 @@ export function useCardReveal({
           return changed ? next : current
         })
       },
-      { threshold: 0.2, rootMargin: '0px 0px -8% 0px' },
+      {
+        root,
+        threshold: 0.15,
+        rootMargin: '0px 0px -4% 0px',
+      },
     )
 
     for (const project of projects) {
       const node = document.querySelector(
-        `[data-testid="project-card-${project.id}"]`,
+        `[data-project-id="${project.id}"]`,
       )
-      if (node) {
-        ;(node as HTMLElement).dataset.projectId = project.id
-        observer.observe(node)
+      if (node) observer.observe(node)
+    }
+
+    // Reveal any cards already in view (or when no scroll overflow).
+    for (const project of projects) {
+      const node = document.querySelector(
+        `[data-project-id="${project.id}"]`,
+      )
+      if (!(node instanceof HTMLElement) || !root) continue
+      const rect = node.getBoundingClientRect()
+      const rootRect = root.getBoundingClientRect()
+      if (rect.top < rootRect.bottom && rect.bottom > rootRect.top) {
+        setRevealedIds((current) => {
+          if (current.has(project.id)) return current
+          const next = new Set(current)
+          next.add(project.id)
+          return next
+        })
       }
     }
 

@@ -27,7 +27,10 @@ export function LeftColumn({
           Head of Design
         </p>
       </header>
-      <div className="flex flex-col gap-2 p-3">
+      <div
+        data-testid="project-list"
+        className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain p-3"
+      >
         {projects.map((project, index) => (
           <ProjectCard
             key={project.id}

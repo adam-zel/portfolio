@@ -30,6 +30,7 @@ export function PortfolioPage({
     projects: PROJECTS,
     scrollRoot,
     enabled: spotlightEnabled,
+    reducedMotion,
   })
 
   const revealedIds = useCardReveal({

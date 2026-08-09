@@ -1,7 +1,7 @@
 import { mediaElementId } from '@/data/projects'
 
-/** Matches Paper Programa media frames (1025×692). */
-export const MEDIA_ASPECT_RATIO = 1025 / 692
+/** Historical portfolio media frame ratio (1496×997). */
+export const MEDIA_ASPECT_RATIO = 1496 / 997
 
 type MediaBlockProps = {
   projectId: string

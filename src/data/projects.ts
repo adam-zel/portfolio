@@ -17,6 +17,7 @@ export const PROJECTS: Project[] = [
       '/project-media/programa-1.webp',
       '/project-media/programa-2.webp',
       '/project-media/programa-3.webp',
+      '/project-media/programa-4.webp',
     ],
   },
   {

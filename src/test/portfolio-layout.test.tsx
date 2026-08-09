@@ -33,11 +33,12 @@ describe('Portfolio layout', () => {
     }
   })
 
-  it('renders Programa with its three Paper media frames', () => {
+  it('renders Programa with its Paper media frames', () => {
     render(<PortfolioPage />)
     expect(screen.getByTestId('media-block-programa')).toBeInTheDocument()
     expect(screen.getByTestId('media-block-programa-1')).toBeInTheDocument()
     expect(screen.getByTestId('media-block-programa-2')).toBeInTheDocument()
+    expect(screen.getByTestId('media-block-programa-3')).toBeInTheDocument()
     const first = screen.getByTestId('media-block-programa').querySelector('img')
     expect(first).toHaveAttribute('src', '/project-media/programa-1.webp')
     expect(

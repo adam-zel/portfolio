@@ -80,7 +80,7 @@ export function RightColumn({
           smoothing={0.12}
           tumble={0.15}
           tilt={0}
-          direction="out"
+          direction="in"
           top
           bottom
         >

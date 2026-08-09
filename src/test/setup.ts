@@ -1,6 +1,24 @@
 import '@testing-library/jest-dom/vitest'
+import { createElement } from 'react'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
+
+vi.mock('torph/react', () => ({
+  TextMorph: ({
+    children,
+    ...props
+  }: {
+    children?: string
+    disabled?: boolean
+    as?: string
+    className?: string
+  }) =>
+    createElement(
+      'span',
+      { 'data-testid': 'identity-subtitle-morph', ...props },
+      children,
+    ),
+}))
 
 class MockIntersectionObserver {
   observe = vi.fn()

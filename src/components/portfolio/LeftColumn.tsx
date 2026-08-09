@@ -1,4 +1,5 @@
 import type { Project } from '@/data/projects'
+import { IdentitySubtitle } from '@/components/portfolio/IdentitySubtitle'
 import { ProjectCard } from '@/components/portfolio/ProjectCard'
 
 type LeftColumnProps = {
@@ -24,9 +25,7 @@ export function LeftColumn({
           <h1 className="text-[26px] leading-[125%] tracking-[-0.325px] text-[color:var(--color-ink)]">
             Adam Zelinski
           </h1>
-          <p className="text-[26px] leading-[125%] tracking-[-0.325px] text-[color:var(--color-ink-muted)]">
-            Head of Design
-          </p>
+          <IdentitySubtitle />
         </header>
 
         {projects.map((project, index) => (

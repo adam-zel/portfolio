@@ -65,22 +65,22 @@ export function RightColumn({
       data-testid="right-column"
       data-bend={useBend ? 'on' : 'off'}
       className={cn(
-        'scrollbar-none relative min-h-0 flex-1 bg-[color:var(--color-ground)] md:h-svh',
-        useBend && 'overflow-hidden',
+        'scrollbar-none relative z-0 min-h-0 flex-1 overflow-hidden bg-[color:var(--color-ground)] md:h-svh',
+        useBend && 'isolate [contain:paint] [clip-path:inset(0)]',
       )}
     >
       {useBend ? (
         <Bend
-          className="absolute inset-0 h-full w-full"
-          zone={140}
-          angle={48}
-          rounding={90}
-          perspective={1100}
+          className="absolute inset-0 h-full w-full overflow-hidden"
+          zone={120}
+          angle={40}
+          rounding={80}
+          perspective={1400}
           ease={200}
           smoothing={0.12}
-          tumble={0.2}
-          tilt={0.15}
-          direction="in"
+          tumble={0.15}
+          tilt={0}
+          direction="out"
           top
           bottom
         >

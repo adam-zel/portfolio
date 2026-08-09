@@ -22,7 +22,7 @@ describe('Portfolio identity subtitle', () => {
     )
   })
 
-  it('morphs to Coffee Drinker after 3 seconds', () => {
+  it('advances to Coffee Drinker after 3 seconds', () => {
     render(<PortfolioPage forceBendOff />)
     act(() => {
       vi.advanceTimersByTime(3000)
@@ -50,8 +50,9 @@ describe('Portfolio identity subtitle', () => {
       vi.advanceTimersByTime(IDENTITY_TITLES.length * 3000)
     })
 
-    const morph = screen.getByTestId('identity-subtitle-morph')
-    expect(morph).toHaveTextContent('Head of Design')
-    expect(morph).toHaveAttribute('disabled')
+    expect(screen.getByTestId('identity-subtitle')).toHaveTextContent(
+      'Head of Design',
+    )
+    expect(screen.queryByTestId('identity-subtitle-morph')).toBeNull()
   })
 })

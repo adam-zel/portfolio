@@ -1,23 +1,41 @@
 import '@testing-library/jest-dom/vitest'
-import { createElement } from 'react'
+import {
+  createElement,
+  useEffect,
+  useState,
+  type ComponentPropsWithoutRef,
+} from 'react'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 
-vi.mock('torph/react', () => ({
-  TextMorph: ({
-    children,
+vi.mock('@/components/animata/text/mask-reveal-up', () => ({
+  default: ({
+    text,
+    holdMs = 3000,
     ...props
   }: {
-    children?: string
-    disabled?: boolean
-    as?: string
+    text?: string | string[]
+    holdMs?: number
     className?: string
-  }) =>
-    createElement(
+    titleClassName?: string
+  } & ComponentPropsWithoutRef<'span'>) => {
+    const samples = Array.isArray(text) ? text : text != null ? [text] : ['']
+    const [index, setIndex] = useState(0)
+
+    useEffect(() => {
+      if (samples.length <= 1) return
+      const id = window.setInterval(() => {
+        setIndex((current) => (current + 1) % samples.length)
+      }, holdMs)
+      return () => window.clearInterval(id)
+    }, [holdMs, samples.length])
+
+    return createElement(
       'span',
       { 'data-testid': 'identity-subtitle-morph', ...props },
-      children,
-    ),
+      samples[index] ?? '',
+    )
+  },
 }))
 
 class MockIntersectionObserver {

@@ -1,14 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import type { Project } from '@/data/projects'
 
 type UseCardRevealOptions = {
   projects: Project[]
+  activeProjectId?: string
   reducedMotion?: boolean
   enabled?: boolean
 }
 
+function revealIds(
+  current: Set<string>,
+  ids: Iterable<string>,
+): Set<string> {
+  const next = new Set(current)
+  let changed = false
+  for (const id of ids) {
+    if (next.has(id)) continue
+    next.add(id)
+    changed = true
+  }
+  return changed ? next : current
+}
+
 export function useCardReveal({
   projects,
+  activeProjectId,
   reducedMotion = false,
   enabled = true,
 }: UseCardRevealOptions) {
@@ -19,71 +35,93 @@ export function useCardReveal({
     return new Set()
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!enabled || reducedMotion) {
       setRevealedIds(new Set(projects.map((project) => project.id)))
       return
     }
 
-    const root = document.querySelector('[data-testid="project-list"]')
+    const column = document.querySelector('[data-testid="left-column"]')
+    const scrollRoot =
+      column instanceof HTMLElement &&
+      column.scrollHeight > column.clientHeight + 1
+        ? column
+        : null
 
-    if (
-      !(root instanceof HTMLElement) ||
-      root.scrollHeight <= root.clientHeight + 1
-    ) {
+    if (!scrollRoot) {
       setRevealedIds(new Set(projects.map((project) => project.id)))
       return
     }
 
+    const cards = projects.flatMap((project) => {
+      const node = scrollRoot.querySelector(
+        `[data-testid="project-card-${project.id}"]`,
+      )
+      return node instanceof HTMLElement ? [node] : []
+    })
+
     const observer = new IntersectionObserver(
       (entries) => {
         setRevealedIds((current) => {
-          const next = new Set(current)
-          let changed = false
+          const ids: string[] = []
           for (const entry of entries) {
             if (!entry.isIntersecting) continue
             const id = (entry.target as HTMLElement).dataset.projectId
-            if (!id || next.has(id)) continue
-            next.add(id)
-            changed = true
+            if (id) ids.push(id)
           }
-          return changed ? next : current
+          return ids.length > 0 ? revealIds(current, ids) : current
         })
       },
       {
-        root,
-        threshold: 0.15,
-        rootMargin: '0px 0px -4% 0px',
+        root: scrollRoot,
+        threshold: 0.12,
+        rootMargin: '0px 0px -6% 0px',
       },
     )
 
-    for (const project of projects) {
-      const node = document.querySelector(
-        `[data-project-id="${project.id}"]`,
-      )
-      if (node) observer.observe(node)
+    const rootRect = scrollRoot.getBoundingClientRect()
+    const initiallyVisible: string[] = []
+
+    for (const node of cards) {
+      observer.observe(node)
+      const rect = node.getBoundingClientRect()
+      if (rect.top < rootRect.bottom && rect.bottom > rootRect.top) {
+        const id = node.dataset.projectId
+        if (id) initiallyVisible.push(id)
+      }
     }
 
-    // Reveal any cards already in view (or when no scroll overflow).
-    for (const project of projects) {
-      const node = document.querySelector(
-        `[data-project-id="${project.id}"]`,
-      )
-      if (!(node instanceof HTMLElement) || !root) continue
-      const rect = node.getBoundingClientRect()
-      const rootRect = root.getBoundingClientRect()
-      if (rect.top < rootRect.bottom && rect.bottom > rootRect.top) {
-        setRevealedIds((current) => {
-          if (current.has(project.id)) return current
-          const next = new Set(current)
-          next.add(project.id)
-          return next
-        })
-      }
+    if (initiallyVisible.length > 0) {
+      setRevealedIds((current) => revealIds(current, initiallyVisible))
     }
 
     return () => observer.disconnect()
   }, [enabled, projects, reducedMotion])
+
+  // Keep the featured project visible and focusable even when it is below the left fold.
+  useLayoutEffect(() => {
+    if (!enabled || !activeProjectId || reducedMotion) return
+
+    setRevealedIds((current) => revealIds(current, [activeProjectId]))
+
+    const column = document.querySelector('[data-testid="left-column"]')
+    if (!(column instanceof HTMLElement)) return
+
+    const card = column.querySelector(
+      `[data-testid="project-card-${CSS.escape(activeProjectId)}"]`,
+    )
+    if (!(card instanceof HTMLElement)) return
+
+    const rootRect = column.getBoundingClientRect()
+    const rect = card.getBoundingClientRect()
+    const inView = rect.top < rootRect.bottom && rect.bottom > rootRect.top
+    if (!inView && typeof card.scrollIntoView === 'function') {
+      card.scrollIntoView({
+        block: 'nearest',
+        behavior: 'auto',
+      })
+    }
+  }, [activeProjectId, enabled, reducedMotion])
 
   return revealedIds
 }

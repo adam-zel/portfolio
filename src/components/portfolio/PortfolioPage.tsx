@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { PROJECTS } from '@/data/projects'
 import { LeftColumn } from '@/components/portfolio/LeftColumn'
 import { RightColumn } from '@/components/portfolio/RightColumn'
@@ -20,7 +20,7 @@ export function PortfolioPage({
   forceBendOff = false,
   spotlightEnabled = true,
 }: PortfolioPageProps = {}) {
-  const [scrollRoot, setScrollRoot] = useState<HTMLDivElement | null>(null)
+  const [scrollRoot, setScrollRoot] = useState<HTMLElement | null>(null)
   const reducedMotion = usePrefersReducedMotion()
   const desktopQuery = useMediaQuery('(min-width: 768px)', Boolean(forceDesktop))
   const isDesktop = forceMobile ? false : forceDesktop ? true : desktopQuery
@@ -35,16 +35,14 @@ export function PortfolioPage({
 
   const revealedIds = useCardReveal({
     projects: PROJECTS,
+    activeProjectId,
     reducedMotion,
     enabled: true,
   })
 
-  const layoutClass = useMemo(() => {
-    if (forceDesktop || isDesktop) {
-      return 'flex min-h-svh flex-row items-stretch overflow-hidden'
-    }
-    return 'flex min-h-svh flex-col items-stretch'
-  }, [forceDesktop, isDesktop])
+  const layoutClass = isDesktop
+    ? 'flex min-h-svh flex-row items-stretch overflow-hidden'
+    : 'flex min-h-svh flex-col items-stretch'
 
   return (
     <main data-testid="portfolio-page" className={layoutClass}>

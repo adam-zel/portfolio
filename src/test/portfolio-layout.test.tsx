@@ -23,4 +23,14 @@ describe('Portfolio layout', () => {
       left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
   })
+
+  it('makes the whole left column the scroll container on desktop', () => {
+    render(<PortfolioPage forceDesktop />)
+    const left = screen.getByTestId('left-column')
+    const list = screen.getByTestId('project-list')
+    expect(left.className).toMatch(/md:overflow-y-auto/)
+    expect(list.className).not.toMatch(/overflow-y-auto/)
+    expect(left.contains(screen.getByText('Adam Zelinski'))).toBe(true)
+    expect(left.contains(list)).toBe(true)
+  })
 })

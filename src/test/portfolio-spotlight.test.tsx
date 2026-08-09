@@ -50,6 +50,14 @@ class MockIntersectionObserver {
   }
 }
 
+function mediaObserver() {
+  return MockIntersectionObserver.instances.find((observer) =>
+    [...observer.elements].some((el) =>
+      (el as HTMLElement).id.startsWith('project-media-'),
+    ),
+  )
+}
+
 describe('Portfolio spotlight', () => {
   beforeEach(() => {
     MockIntersectionObserver.instances = []
@@ -61,6 +69,7 @@ describe('Portfolio spotlight', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals()
+    vi.useRealTimers()
   })
 
   it('defaults to the first project as active', () => {
@@ -71,16 +80,16 @@ describe('Portfolio spotlight', () => {
     )
   })
 
-  it('marks the featured media project active when intersection updates', async () => {
+  it('marks the featured media project active and revealed when intersection updates', async () => {
     render(<PortfolioPage forceDesktop forceBendOff />)
-    const observer = MockIntersectionObserver.instances.at(-1)
+    const observer = mediaObserver()
     expect(observer).toBeTruthy()
     observer!.trigger('pennant', 0.9)
     await waitFor(() => {
-      expect(screen.getByTestId('project-card-pennant')).toHaveAttribute(
-        'aria-current',
-        'true',
-      )
+      const card = screen.getByTestId('project-card-pennant')
+      expect(card).toHaveAttribute('aria-current', 'true')
+      expect(card).not.toHaveAttribute('aria-hidden')
+      expect(card).toHaveClass('project-card--revealed')
     })
     expect(screen.getByTestId('project-card-programa')).not.toHaveAttribute(
       'aria-current',
@@ -93,15 +102,41 @@ describe('Portfolio spotlight', () => {
     Element.prototype.scrollIntoView = scrollIntoView
 
     render(<PortfolioPage forceDesktop forceBendOff />)
+    const media = document.getElementById(mediaElementId('pocket-casts'))
+    expect(media).toBeTruthy()
+
     await user.click(screen.getByTestId('project-card-pocket-casts'))
 
     expect(scrollIntoView).toHaveBeenCalled()
+    expect(scrollIntoView.mock.instances).toContain(media)
     expect(screen.getByTestId('project-card-pocket-casts')).toHaveAttribute(
       'aria-current',
       'true',
     )
-    expect(
-      document.getElementById(mediaElementId('pocket-casts')),
-    ).toBeTruthy()
+  })
+
+  it('ignores spotlight IO while a click-jump scroll is in flight', async () => {
+    const user = userEvent.setup()
+    Element.prototype.scrollIntoView = vi.fn()
+
+    render(<PortfolioPage forceDesktop forceBendOff />)
+    const observer = mediaObserver()
+    expect(observer).toBeTruthy()
+
+    await user.click(screen.getByTestId('project-card-pocket-casts'))
+    expect(screen.getByTestId('project-card-pocket-casts')).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+
+    // Intermediate media wins the ratio race during smooth scroll; lock must hold.
+    observer!.trigger('pennant', 0.95)
+    expect(screen.getByTestId('project-card-pocket-casts')).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+    expect(screen.getByTestId('project-card-pennant')).not.toHaveAttribute(
+      'aria-current',
+    )
   })
 })

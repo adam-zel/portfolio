@@ -1,0 +1,17 @@
+# Concepts
+
+Shared domain vocabulary for this project — entities, named processes, and status concepts with project-specific meaning. Seeded with core domain vocabulary, then accretes as ce-compound and ce-compound-refresh process learnings; direct edits are fine. Glossary only, not a spec or catch-all.
+
+## Portfolio home
+
+### Spotlight
+The scroll-linked pairing between the left project list and the right media stack: whichever media block is featured is the active project in the list, and clicking a list row jumps media so that project is featured.
+
+### Active project
+The project currently featured by Spotlight. It must remain visible and focusable in the left list even when that row has not yet scrolled into the left column on its own.
+
+### Card reveal
+The progressive show of left-column project rows as they enter the left scrollport. Reveal is additive and must treat the Active project as revealed so Spotlight never highlights a hidden row.
+
+### Programmatic scroll lock
+A short window after a click-to-jump where Spotlight ignores media-root intersection updates so intermediate media blocks cannot steal the Active project during smooth scroll.

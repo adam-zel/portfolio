@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { Project } from '@/data/projects'
+import { cn } from '@/lib/utils'
 
 type ProjectCardProps = {
   project: Project
@@ -28,13 +29,12 @@ export function ProjectCard({
         if (!revealed) return
         onSelect?.(project.id)
       }}
-      className={[
-        'flex w-full items-center gap-3 rounded-sm border p-4 text-left transition-[opacity,transform,background-color,border-color] duration-500 ease-out',
-        active
-          ? 'border-[color:var(--color-ink)]/25 bg-[#ebe9e3]'
-          : 'border-[color:var(--color-border)] bg-[color:var(--color-card)]',
-        revealed ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
-      ].join(' ')}
+      className={cn(
+        'project-card flex w-full items-center gap-3 rounded-sm border p-4 text-left',
+        'border-[color:var(--color-border)] bg-[color:var(--color-card)]',
+        active && 'border-[color:var(--color-ink)]/25 bg-[#ebe9e3]',
+        revealed ? 'project-card--revealed' : 'project-card--hidden pointer-events-none',
+      )}
       style={style}
     >
       <div

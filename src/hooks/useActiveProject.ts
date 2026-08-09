@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { mediaElementId, type Project } from '@/data/projects'
 
 type UseActiveProjectOptions = {
@@ -7,6 +7,8 @@ type UseActiveProjectOptions = {
   enabled?: boolean
   reducedMotion?: boolean
 }
+
+const PROGRAMMATIC_SCROLL_SETTLE_MS = 700
 
 export function useActiveProject({
   projects,
@@ -17,14 +19,28 @@ export function useActiveProject({
   const [activeProjectId, setActiveProjectId] = useState(
     projects[0]?.id ?? '',
   )
+  const programmaticLockRef = useRef<string | null>(null)
+  const settleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (settleTimerRef.current !== null) {
+        clearTimeout(settleTimerRef.current)
+        settleTimerRef.current = null
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!enabled || projects.length === 0 || !scrollRoot) return
 
     const ratios = new Map<string, number>()
+    let disposed = false
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (disposed || programmaticLockRef.current) return
+
         for (const entry of entries) {
           const id = (entry.target as HTMLElement).dataset.projectId
           if (!id) continue
@@ -41,7 +57,9 @@ export function useActiveProject({
           }
         }
         if (bestRatio > 0) {
-          setActiveProjectId(bestId)
+          setActiveProjectId((current) =>
+            current === bestId ? current : bestId,
+          )
         }
       },
       {
@@ -52,27 +70,63 @@ export function useActiveProject({
     )
 
     for (const project of projects) {
-      const node = scrollRoot.querySelector(`#${CSS.escape(mediaElementId(project.id))}`)
+      const node = scrollRoot.querySelector(
+        `#${CSS.escape(mediaElementId(project.id))}`,
+      )
       if (node) observer.observe(node)
     }
 
-    return () => observer.disconnect()
+    return () => {
+      disposed = true
+      observer.disconnect()
+    }
   }, [enabled, projects, scrollRoot])
 
   const selectProject = (projectId: string) => {
+    programmaticLockRef.current = projectId
     setActiveProjectId(projectId)
+
+    const clearLock = () => {
+      if (programmaticLockRef.current === projectId) {
+        programmaticLockRef.current = null
+      }
+      if (settleTimerRef.current !== null) {
+        clearTimeout(settleTimerRef.current)
+        settleTimerRef.current = null
+      }
+    }
+
     const target = scrollRoot?.querySelector(
       `#${CSS.escape(mediaElementId(projectId))}`,
     )
-    target?.scrollIntoView({
+    if (!(target instanceof HTMLElement)) {
+      clearLock()
+      return
+    }
+
+    target.scrollIntoView({
       behavior: reducedMotion ? 'auto' : 'smooth',
       block: 'start',
     })
+
+    if (reducedMotion || !scrollRoot) {
+      clearLock()
+      return
+    }
+
+    const onScrollEnd = () => {
+      scrollRoot.removeEventListener('scrollend', onScrollEnd)
+      clearLock()
+    }
+    scrollRoot.addEventListener('scrollend', onScrollEnd, { once: true })
+    settleTimerRef.current = setTimeout(() => {
+      scrollRoot.removeEventListener('scrollend', onScrollEnd)
+      clearLock()
+    }, PROGRAMMATIC_SCROLL_SETTLE_MS)
   }
 
   return {
     activeProjectId,
-    setActiveProjectId,
     selectProject,
   }
 }

@@ -12,6 +12,7 @@
   --color-card: #f2f1ed;
   --color-border: rgb(38 37 30 / 0.08);
   --color-logo: #dddddd;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color: var(--color-ink);
   background: var(--color-ground);
   font-family:
@@ -172,5 +173,52 @@ body {
   }
   html {
     @apply font-sans;
+  }
+}
+
+.scrollbar-none,
+.scrollbar-none * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-none *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.project-card {
+  transition:
+    opacity 380ms var(--ease-out),
+    transform 380ms var(--ease-out),
+    background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out);
+}
+
+.project-card--hidden {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.project-card--revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-card:active:not([aria-hidden='true']) {
+  transform: scale(0.985);
+  transition-duration: 140ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .project-card:active:not([aria-hidden='true']) {
+    transform: none;
   }
 }

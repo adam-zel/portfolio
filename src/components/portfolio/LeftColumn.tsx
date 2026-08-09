@@ -17,26 +17,28 @@ export function LeftColumn({
   return (
     <aside
       data-testid="left-column"
-      className="flex w-full shrink-0 flex-col overflow-hidden bg-[color:var(--color-ground)] md:sticky md:top-0 md:h-svh md:w-[400px]"
+      className="scrollbar-none flex w-full shrink-0 flex-col overflow-hidden bg-[color:var(--color-ground)] md:h-svh md:w-[400px] md:overflow-y-auto md:overscroll-contain"
     >
-      <header className="flex h-80 shrink-0 flex-col items-center justify-center p-2 text-center">
-        <h1 className="text-[26px] leading-[125%] tracking-[-0.325px] text-[color:var(--color-ink)]">
-          Adam Zelinski
-        </h1>
-        <p className="text-[26px] leading-[125%] tracking-[-0.325px] text-[color:var(--color-ink-muted)]">
-          Head of Design
-        </p>
-      </header>
-      <div
-        data-testid="project-list"
-        className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain p-3"
-      >
+      <div data-testid="project-list" className="flex flex-col gap-2 p-3">
+        <header className="flex h-80 shrink-0 flex-col items-center justify-center text-center">
+          <h1 className="text-[26px] leading-[125%] tracking-[-0.325px] text-[color:var(--color-ink)]">
+            Adam Zelinski
+          </h1>
+          <p className="text-[26px] leading-[125%] tracking-[-0.325px] text-[color:var(--color-ink-muted)]">
+            Head of Design
+          </p>
+        </header>
+
         {projects.map((project, index) => (
           <ProjectCard
             key={project.id}
             project={project}
             active={project.id === activeProjectId}
-            revealed={revealedIds ? revealedIds.has(project.id) : true}
+            revealed={
+              revealedIds
+                ? revealedIds.has(project.id) || project.id === activeProjectId
+                : true
+            }
             style={
               revealedIds
                 ? { transitionDelay: `${index * 40}ms` }

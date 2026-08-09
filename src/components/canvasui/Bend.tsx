@@ -6,7 +6,6 @@ import {
   useState,
   useSyncExternalStore,
   type ReactNode,
-  type RefObject,
 } from "react";
 
 export interface BendOptions {
@@ -976,31 +975,13 @@ export interface BendProps extends BendOptions {
 
 const emptySubscribe = () => () => {};
 
-export function Bend({
-  children,
-  className,
-  style,
-  contentRef: externalContentRef,
-  onContentElement,
-  ...options
-}: BendProps & {
-  contentRef?: RefObject<HTMLDivElement | null>;
-  onContentElement?: (node: HTMLDivElement | null) => void;
-}) {
+export function Bend({ children, className, style, ...options }: BendProps) {
   const sourceRef = useRef<HTMLCanvasElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const outputRef = useRef<HTMLCanvasElement>(null);
   const instanceRef = useRef<BendInstance | null>(null);
   const [initialOptions] = useState(options);
   const [failed, setFailed] = useState(false);
-
-  const setContentRef = (node: HTMLDivElement | null) => {
-    contentRef.current = node;
-    if (externalContentRef) {
-      externalContentRef.current = node;
-    }
-    onContentElement?.(node);
-  };
 
   const supported = useSyncExternalStore(
     emptySubscribe,
@@ -1044,8 +1025,7 @@ export function Bend({
       >
         {native ? (
           <div
-            ref={setContentRef}
-            data-bend-content="true"
+            ref={contentRef}
             style={{
               position: "relative",
               width: "100%",
@@ -1059,8 +1039,7 @@ export function Bend({
       </canvas>
       {!native ? (
         <div
-          ref={setContentRef}
-          data-bend-content="true"
+          ref={contentRef}
           style={{
             position: "relative",
             width: "100%",

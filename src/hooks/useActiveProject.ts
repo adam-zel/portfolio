@@ -34,33 +34,42 @@ export function useActiveProject({
   useEffect(() => {
     if (!enabled || projects.length === 0 || !scrollRoot) return
 
-    const ratios = new Map<string, number>()
+    const ratiosByElement = new Map<Element, number>()
     let disposed = false
+
+    const pickBestProject = () => {
+      let bestId = projects[0]?.id ?? ''
+      let bestRatio = -1
+      for (const project of projects) {
+        let projectRatio = 0
+        for (const [element, ratio] of ratiosByElement) {
+          if ((element as HTMLElement).dataset.projectId === project.id) {
+            projectRatio = Math.max(projectRatio, ratio)
+          }
+        }
+        if (projectRatio > bestRatio) {
+          bestRatio = projectRatio
+          bestId = project.id
+        }
+      }
+      if (bestRatio > 0) {
+        setActiveProjectId((current) =>
+          current === bestId ? current : bestId,
+        )
+      }
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (disposed || programmaticLockRef.current) return
 
         for (const entry of entries) {
-          const id = (entry.target as HTMLElement).dataset.projectId
-          if (!id) continue
-          ratios.set(id, entry.isIntersecting ? entry.intersectionRatio : 0)
-        }
-
-        let bestId = projects[0]?.id ?? ''
-        let bestRatio = -1
-        for (const project of projects) {
-          const ratio = ratios.get(project.id) ?? 0
-          if (ratio > bestRatio) {
-            bestRatio = ratio
-            bestId = project.id
-          }
-        }
-        if (bestRatio > 0) {
-          setActiveProjectId((current) =>
-            current === bestId ? current : bestId,
+          ratiosByElement.set(
+            entry.target,
+            entry.isIntersecting ? entry.intersectionRatio : 0,
           )
         }
+        pickBestProject()
       },
       {
         root: scrollRoot,
@@ -69,12 +78,10 @@ export function useActiveProject({
       },
     )
 
-    for (const project of projects) {
-      const node = scrollRoot.querySelector(
-        `#${CSS.escape(mediaElementId(project.id))}`,
-      )
-      if (node) observer.observe(node)
-    }
+    const mediaBlocks = scrollRoot.querySelectorAll(
+      '[data-testid^="media-block-"]',
+    )
+    mediaBlocks.forEach((node) => observer.observe(node))
 
     return () => {
       disposed = true

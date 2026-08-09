@@ -17,7 +17,6 @@ export const IDENTITY_TITLES = [
   'App Developer',
   'Record Collector',
   'Carlton Supporter',
-  'Sandwich Enthusiast',
 ] as const
 
 /** Shared with MaskRevealUp so the samples array identity stays stable across renders. */

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { PROJECTS } from '@/data/projects'
+import { PROJECTS, projectMediaFrames } from '@/data/projects'
 import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
 import { mockPrefersReducedMotion } from '@/test/matchMedia'
 
@@ -30,7 +30,7 @@ describe('Portfolio motion', () => {
       screen.getByTestId('right-column').querySelectorAll(
         '[data-testid^="media-block-"]',
       ).length,
-    ).toBe(PROJECTS.length)
+    ).toBe(PROJECTS.flatMap(projectMediaFrames).length)
   })
 
   it('reveals cards when reduced motion is preferred', () => {

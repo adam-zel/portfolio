@@ -2,14 +2,20 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { PROJECTS } from '@/data/projects'
+import { PROJECTS, projectMediaFrames } from '@/data/projects'
 import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
 
+const EXPECTED_MEDIA_FRAME_COUNT = PROJECTS.flatMap(projectMediaFrames).length
+
 describe('Portfolio layout', () => {
-  it('ships a public file for every project logo path', () => {
+  it('ships a public file for every project logo and media image path', () => {
     for (const project of PROJECTS) {
       const absolute = path.join(process.cwd(), 'public', project.logo.replace(/^\//, ''))
       expect(existsSync(absolute), `missing ${project.logo}`).toBe(true)
+      for (const src of project.images ?? []) {
+        const mediaPath = path.join(process.cwd(), 'public', src.replace(/^\//, ''))
+        expect(existsSync(mediaPath), `missing ${src}`).toBe(true)
+      }
     }
   })
 
@@ -25,6 +31,20 @@ describe('Portfolio layout', () => {
       expect(logo).toHaveAttribute('src', project.logo)
       expect(screen.getByTestId(`media-block-${project.id}`)).toBeInTheDocument()
     }
+  })
+
+  it('renders Programa with its three Paper media frames', () => {
+    render(<PortfolioPage />)
+    expect(screen.getByTestId('media-block-programa')).toBeInTheDocument()
+    expect(screen.getByTestId('media-block-programa-1')).toBeInTheDocument()
+    expect(screen.getByTestId('media-block-programa-2')).toBeInTheDocument()
+    const first = screen.getByTestId('media-block-programa').querySelector('img')
+    expect(first).toHaveAttribute('src', '/project-media/programa-1.webp')
+    expect(
+      screen.getByTestId('right-column').querySelectorAll(
+        '[data-testid^="media-block-"]',
+      ).length,
+    ).toBe(EXPECTED_MEDIA_FRAME_COUNT)
   })
 
   it('places the project list before media in document order', () => {

@@ -1,4 +1,4 @@
-import type { Project } from '@/data/projects'
+import { projectMediaFrames, type Project } from '@/data/projects'
 import { MediaBlock } from '@/components/portfolio/MediaBlock'
 
 type RightColumnProps = {
@@ -7,16 +7,20 @@ type RightColumnProps = {
 }
 
 function MediaStack({ projects }: { projects: Project[] }) {
+  const frames = projects.flatMap(projectMediaFrames)
+
   return (
     <div
       data-testid="right-media-stack"
       className="flex min-h-full flex-col gap-2 p-2"
     >
-      {projects.map((project) => (
+      {frames.map((frame) => (
         <MediaBlock
-          key={project.id}
-          projectId={project.id}
-          title={project.title}
+          key={`${frame.projectId}-${frame.index}`}
+          projectId={frame.projectId}
+          title={frame.title}
+          index={frame.index}
+          imageSrc={frame.src}
         />
       ))}
     </div>

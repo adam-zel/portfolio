@@ -3,6 +3,8 @@ export type Project = {
   title: string
   blurb: string
   logo: string
+  /** Media frame images for the right column. Empty = one placeholder frame. */
+  images?: string[]
 }
 
 export const PROJECTS: Project[] = [
@@ -11,6 +13,11 @@ export const PROJECTS: Project[] = [
     title: 'Programa',
     blurb: 'Design management for interior designers and architects.',
     logo: '/project-icons/programa.png',
+    images: [
+      '/project-media/programa-1.webp',
+      '/project-media/programa-2.webp',
+      '/project-media/programa-3.webp',
+    ],
   },
   {
     id: 'pennant',
@@ -47,6 +54,20 @@ export const PROJECTS: Project[] = [
   },
 ]
 
-export function mediaElementId(projectId: string) {
-  return `project-media-${projectId}`
+/** DOM id for a project's media frame. Index 0 is the scroll-target for card clicks. */
+export function mediaElementId(projectId: string, index = 0) {
+  return index === 0
+    ? `project-media-${projectId}`
+    : `project-media-${projectId}-${index}`
+}
+
+/** Flat list of media frames to render in the right column. */
+export function projectMediaFrames(project: Project) {
+  const images = project.images?.length ? project.images : [undefined]
+  return images.map((src, index) => ({
+    projectId: project.id,
+    title: project.title,
+    index,
+    src,
+  }))
 }

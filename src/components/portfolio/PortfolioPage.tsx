@@ -1,21 +1,34 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, type ReactNode } from 'react'
 import { PROJECTS } from '@/data/projects'
 import { LeftColumn } from '@/components/portfolio/LeftColumn'
 import { RightColumn } from '@/components/portfolio/RightColumn'
+import { useActiveProject } from '@/hooks/useActiveProject'
 
 type PortfolioPageProps = {
   forceDesktop?: boolean
+  spotlightEnabled?: boolean
+  revealedIds?: Set<string>
+  mediaWrapper?: (content: ReactNode) => ReactNode
 }
 
-export function PortfolioPage({ forceDesktop }: PortfolioPageProps = {}) {
-  const [activeProjectId, setActiveProjectId] = useState(PROJECTS[0]?.id ?? '')
+export function PortfolioPage({
+  forceDesktop,
+  spotlightEnabled = true,
+  revealedIds,
+  mediaWrapper,
+}: PortfolioPageProps = {}) {
   const scrollRootRef = useRef<HTMLDivElement | null>(null)
+  const { activeProjectId, selectProject } = useActiveProject({
+    projects: PROJECTS,
+    scrollRootRef,
+    enabled: spotlightEnabled,
+  })
 
   const layoutClass = useMemo(() => {
     if (forceDesktop) {
-      return 'flex min-h-svh flex-row items-stretch'
+      return 'flex min-h-svh flex-row items-stretch overflow-hidden'
     }
-    return 'flex min-h-svh flex-col items-stretch md:flex-row'
+    return 'flex min-h-svh flex-col items-stretch md:flex-row md:overflow-hidden'
   }, [forceDesktop])
 
   return (
@@ -23,11 +36,13 @@ export function PortfolioPage({ forceDesktop }: PortfolioPageProps = {}) {
       <LeftColumn
         projects={PROJECTS}
         activeProjectId={activeProjectId}
-        onSelectProject={setActiveProjectId}
+        revealedIds={revealedIds}
+        onSelectProject={selectProject}
       />
       <RightColumn
         projects={PROJECTS}
         scrollRootRef={scrollRootRef}
+        childrenWrapper={mediaWrapper}
       />
     </main>
   )

@@ -72,14 +72,14 @@ export function RightColumn({
       {useBend ? (
         <Bend
           className="absolute inset-0 h-full w-full"
-          zone={240}
-          angle={80}
-          rounding={150}
-          perspective={700}
-          ease={240}
-          smoothing={0.1}
-          tumble={0.5}
-          tilt={0.5}
+          zone={140}
+          angle={48}
+          rounding={90}
+          perspective={1100}
+          ease={200}
+          smoothing={0.12}
+          tumble={0.2}
+          tilt={0.15}
           direction="in"
           top
           bottom

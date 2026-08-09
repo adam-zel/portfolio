@@ -15,6 +15,21 @@ vi.stubGlobal(
   MockIntersectionObserver as unknown as typeof IntersectionObserver,
 )
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  configurable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }),
+})
+
 afterEach(() => {
   cleanup()
 })

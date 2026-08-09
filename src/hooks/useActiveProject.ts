@@ -1,15 +1,15 @@
-import { useEffect, useState, type RefObject } from 'react'
+import { useEffect, useState } from 'react'
 import { mediaElementId, type Project } from '@/data/projects'
 
 type UseActiveProjectOptions = {
   projects: Project[]
-  scrollRootRef: RefObject<HTMLElement | null>
+  scrollRoot: HTMLElement | null
   enabled?: boolean
 }
 
 export function useActiveProject({
   projects,
-  scrollRootRef,
+  scrollRoot,
   enabled = true,
 }: UseActiveProjectOptions) {
   const [activeProjectId, setActiveProjectId] = useState(
@@ -17,10 +17,7 @@ export function useActiveProject({
   )
 
   useEffect(() => {
-    if (!enabled || projects.length === 0) return
-
-    const root = scrollRootRef.current
-    if (!root) return
+    if (!enabled || projects.length === 0 || !scrollRoot) return
 
     const ratios = new Map<string, number>()
 
@@ -46,24 +43,25 @@ export function useActiveProject({
         }
       },
       {
-        root,
+        root: scrollRoot,
         threshold: [0.2, 0.35, 0.5, 0.65, 0.8],
         rootMargin: '-10% 0px -35% 0px',
       },
     )
 
     for (const project of projects) {
-      const node = root.querySelector(`#${mediaElementId(project.id)}`)
+      const node = scrollRoot.querySelector(`#${CSS.escape(mediaElementId(project.id))}`)
       if (node) observer.observe(node)
     }
 
     return () => observer.disconnect()
-  }, [enabled, projects, scrollRootRef])
+  }, [enabled, projects, scrollRoot])
 
   const selectProject = (projectId: string) => {
     setActiveProjectId(projectId)
-    const root = scrollRootRef.current
-    const target = root?.querySelector(`#${mediaElementId(projectId)}`)
+    const target = scrollRoot?.querySelector(
+      `#${CSS.escape(mediaElementId(projectId))}`,
+    )
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 

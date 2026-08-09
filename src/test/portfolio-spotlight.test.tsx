@@ -64,7 +64,7 @@ describe('Portfolio spotlight', () => {
   })
 
   it('defaults to the first project as active', () => {
-    render(<PortfolioPage forceDesktop />)
+    render(<PortfolioPage forceDesktop forceBendOff />)
     expect(screen.getByTestId('project-card-programa')).toHaveAttribute(
       'aria-current',
       'true',
@@ -72,7 +72,7 @@ describe('Portfolio spotlight', () => {
   })
 
   it('marks the featured media project active when intersection updates', async () => {
-    render(<PortfolioPage forceDesktop />)
+    render(<PortfolioPage forceDesktop forceBendOff />)
     const observer = MockIntersectionObserver.instances.at(-1)
     expect(observer).toBeTruthy()
     observer!.trigger('pennant', 0.9)
@@ -92,7 +92,7 @@ describe('Portfolio spotlight', () => {
     const scrollIntoView = vi.fn()
     Element.prototype.scrollIntoView = scrollIntoView
 
-    render(<PortfolioPage forceDesktop />)
+    render(<PortfolioPage forceDesktop forceBendOff />)
     await user.click(screen.getByTestId('project-card-pocket-casts'))
 
     expect(scrollIntoView).toHaveBeenCalled()

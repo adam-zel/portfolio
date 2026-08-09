@@ -18,3 +18,6 @@ A short window after a click-to-jump where Spotlight ignores media-root intersec
 
 ### Card interaction cue
 Audio feedback on a project card for hover, pointer press, and keyboard activation. Cues are independent of Card reveal and Spotlight selection: sound must not gate on reduced-motion preference, and cue wiring must stay additive so it does not change which row is Active or whether a row is revealed.
+
+### Identity subtitle
+The muted line under the name in the left column. It cycles through a fixed ordered list of personality titles via character morph, with a readable dwell and stable width. Distinct from the static name and from project-card copy.

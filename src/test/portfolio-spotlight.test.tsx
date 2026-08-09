@@ -73,7 +73,7 @@ describe('Portfolio spotlight', () => {
   })
 
   it('defaults to the first project as active', () => {
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     expect(screen.getByTestId('project-card-programa')).toHaveAttribute(
       'aria-current',
       'true',
@@ -81,7 +81,7 @@ describe('Portfolio spotlight', () => {
   })
 
   it('marks the featured media project active and revealed when intersection updates', async () => {
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const observer = mediaObserver()
     expect(observer).toBeTruthy()
     observer!.trigger('pennant', 0.9)
@@ -101,7 +101,7 @@ describe('Portfolio spotlight', () => {
     const scrollIntoView = vi.fn()
     Element.prototype.scrollIntoView = scrollIntoView
 
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const media = document.getElementById(mediaElementId('pocket-casts'))
     expect(media).toBeTruthy()
 
@@ -119,7 +119,7 @@ describe('Portfolio spotlight', () => {
     const user = userEvent.setup()
     Element.prototype.scrollIntoView = vi.fn()
 
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const observer = mediaObserver()
     expect(observer).toBeTruthy()
 

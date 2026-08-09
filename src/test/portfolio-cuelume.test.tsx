@@ -28,7 +28,7 @@ describe('Portfolio Cuelume cues', () => {
   })
 
   it('marks revealed project cards with hover tick and press attributes', () => {
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const card = screen.getByTestId('project-card-programa')
     expect(card).toHaveAttribute('data-cuelume-hover', 'tick')
     expect(card).toHaveAttribute('data-cuelume-press')
@@ -37,7 +37,7 @@ describe('Portfolio Cuelume cues', () => {
 
   it('does not play toggle on pointer click while still selecting the project', async () => {
     const user = userEvent.setup()
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     await user.click(screen.getByTestId('project-card-pennant'))
     expect(play).not.toHaveBeenCalledWith('toggle')
     expect(screen.getByTestId('project-card-pennant')).toHaveAttribute(
@@ -53,7 +53,7 @@ describe('Portfolio Cuelume cues', () => {
     'plays toggle once on %s and activates the project via native click',
     async (_label, key) => {
       const user = userEvent.setup()
-      render(<PortfolioPage forceDesktop forceBendOff />)
+      render(<PortfolioPage forceDesktop />)
       const card = screen.getByTestId('project-card-pennant')
       card.focus()
       await user.keyboard(key)
@@ -67,7 +67,7 @@ describe('Portfolio Cuelume cues', () => {
     mockPrefersReducedMotion()
 
     const user = userEvent.setup()
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const card = screen.getByTestId('project-card-pennant')
     expect(card).toHaveAttribute('data-cuelume-hover', 'tick')
     expect(card).toHaveAttribute('data-cuelume-press')

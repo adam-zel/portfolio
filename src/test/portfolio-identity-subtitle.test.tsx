@@ -18,7 +18,7 @@ describe('Portfolio identity subtitle', () => {
   })
 
   it('shows the name and starts on Head of Design', () => {
-    render(<PortfolioPage forceBendOff />)
+    render(<PortfolioPage />)
     expect(screen.getByText('Adam Zelinski')).toBeInTheDocument()
     expect(screen.getByTestId('identity-subtitle-morph')).toHaveTextContent(
       IDENTITY_TITLES[0],
@@ -26,7 +26,7 @@ describe('Portfolio identity subtitle', () => {
   })
 
   it('advances to Coffee Drinker after enter + dwell + exit', () => {
-    render(<PortfolioPage forceBendOff />)
+    render(<PortfolioPage />)
     act(() => {
       vi.advanceTimersByTime(IDENTITY_SUBTITLE_ADVANCE_MS)
     })
@@ -36,7 +36,7 @@ describe('Portfolio identity subtitle', () => {
   })
 
   it('loops back to Head of Design after the full title list', () => {
-    render(<PortfolioPage forceBendOff />)
+    render(<PortfolioPage />)
     act(() => {
       vi.advanceTimersByTime(
         IDENTITY_TITLES.length * IDENTITY_SUBTITLE_ADVANCE_MS,
@@ -49,7 +49,7 @@ describe('Portfolio identity subtitle', () => {
 
   it('freezes on Head of Design when reduced motion is preferred', () => {
     mockPrefersReducedMotion()
-    render(<PortfolioPage forceBendOff />)
+    render(<PortfolioPage />)
 
     act(() => {
       vi.advanceTimersByTime(

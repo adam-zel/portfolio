@@ -10,21 +10,18 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 type PortfolioPageProps = {
   forceDesktop?: boolean
   forceMobile?: boolean
-  forceBendOff?: boolean
   spotlightEnabled?: boolean
 }
 
 export function PortfolioPage({
   forceDesktop,
   forceMobile,
-  forceBendOff = false,
   spotlightEnabled = true,
 }: PortfolioPageProps = {}) {
   const [scrollRoot, setScrollRoot] = useState<HTMLElement | null>(null)
   const reducedMotion = usePrefersReducedMotion()
   const desktopQuery = useMediaQuery('(min-width: 768px)', Boolean(forceDesktop))
   const isDesktop = forceMobile ? false : forceDesktop ? true : desktopQuery
-  const useBend = isDesktop && !forceBendOff && !reducedMotion
 
   const { activeProjectId, selectProject } = useActiveProject({
     projects: PROJECTS,
@@ -55,7 +52,6 @@ export function PortfolioPage({
       <RightColumn
         projects={PROJECTS}
         onScrollRootChange={setScrollRoot}
-        useBend={useBend}
       />
     </main>
   )

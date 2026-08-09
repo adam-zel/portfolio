@@ -33,7 +33,7 @@ export function LeftColumn({
   return (
     <aside
       data-testid="left-column"
-      className="scrollbar-none relative z-20 flex w-full shrink-0 flex-col overflow-hidden bg-[color:var(--color-ground)] md:h-svh md:w-[400px] md:overflow-y-auto md:overscroll-contain"
+      className="scrollbar-none flex w-full shrink-0 flex-col overflow-hidden bg-[color:var(--color-ground)] md:h-svh md:w-[400px] md:overflow-y-auto md:overscroll-contain"
     >
       <div data-testid="project-list" className="flex flex-col gap-2 p-3">
         <header className="flex h-80 shrink-0 flex-col items-center justify-center text-center">

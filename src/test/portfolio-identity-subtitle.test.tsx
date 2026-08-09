@@ -1,7 +1,10 @@
 import { act, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
-import { IDENTITY_TITLES } from '@/data/identityTitles'
+import {
+  IDENTITY_SUBTITLE_ADVANCE_MS,
+  IDENTITY_TITLES,
+} from '@/data/identityTitles'
 import { mockPrefersReducedMotion } from '@/test/matchMedia'
 
 describe('Portfolio identity subtitle', () => {
@@ -18,27 +21,29 @@ describe('Portfolio identity subtitle', () => {
     render(<PortfolioPage forceBendOff />)
     expect(screen.getByText('Adam Zelinski')).toBeInTheDocument()
     expect(screen.getByTestId('identity-subtitle-morph')).toHaveTextContent(
-      'Head of Design',
+      IDENTITY_TITLES[0],
     )
   })
 
-  it('advances to Coffee Drinker after 3 seconds', () => {
+  it('advances to Coffee Drinker after enter + dwell + exit', () => {
     render(<PortfolioPage forceBendOff />)
     act(() => {
-      vi.advanceTimersByTime(3000)
+      vi.advanceTimersByTime(IDENTITY_SUBTITLE_ADVANCE_MS)
     })
     expect(screen.getByTestId('identity-subtitle-morph')).toHaveTextContent(
-      'Coffee Drinker',
+      IDENTITY_TITLES[1]!,
     )
   })
 
   it('loops back to Head of Design after the full title list', () => {
     render(<PortfolioPage forceBendOff />)
     act(() => {
-      vi.advanceTimersByTime(IDENTITY_TITLES.length * 3000)
+      vi.advanceTimersByTime(
+        IDENTITY_TITLES.length * IDENTITY_SUBTITLE_ADVANCE_MS,
+      )
     })
     expect(screen.getByTestId('identity-subtitle-morph')).toHaveTextContent(
-      'Head of Design',
+      IDENTITY_TITLES[0],
     )
   })
 
@@ -47,11 +52,13 @@ describe('Portfolio identity subtitle', () => {
     render(<PortfolioPage forceBendOff />)
 
     act(() => {
-      vi.advanceTimersByTime(IDENTITY_TITLES.length * 3000)
+      vi.advanceTimersByTime(
+        IDENTITY_TITLES.length * IDENTITY_SUBTITLE_ADVANCE_MS,
+      )
     })
 
     expect(screen.getByTestId('identity-subtitle')).toHaveTextContent(
-      'Head of Design',
+      IDENTITY_TITLES[0],
     )
     expect(screen.queryByTestId('identity-subtitle-morph')).toBeNull()
   })

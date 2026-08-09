@@ -1,16 +1,28 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { PROJECTS } from '@/data/projects'
 import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
 
 describe('Portfolio layout', () => {
+  it('ships a public file for every project logo path', () => {
+    for (const project of PROJECTS) {
+      const absolute = path.join(process.cwd(), 'public', project.logo.replace(/^\//, ''))
+      expect(existsSync(absolute), `missing ${project.logo}`).toBe(true)
+    }
+  })
+
   it('shows identity and all project titles', () => {
     render(<PortfolioPage />)
     expect(screen.getByText('Adam Zelinski')).toBeInTheDocument()
     expect(screen.getByText('Head of Design')).toBeInTheDocument()
     for (const project of PROJECTS) {
       expect(screen.getByText(project.title)).toBeInTheDocument()
-      expect(screen.getByTestId(`project-logo-${project.id}`)).toBeInTheDocument()
+      expect(screen.getByText(project.blurb)).toBeInTheDocument()
+      const logo = screen.getByTestId(`project-logo-${project.id}`)
+      expect(logo).toBeInTheDocument()
+      expect(logo).toHaveAttribute('src', project.logo)
       expect(screen.getByTestId(`media-block-${project.id}`)).toBeInTheDocument()
     }
   })

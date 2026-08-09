@@ -10,6 +10,7 @@
   --color-ink: #26251e;
   --color-ink-muted: rgb(38 37 30 / 0.6);
   --color-card: #f2f1ed;
+  --color-card-active: #e6e5e0;
   --color-border: rgb(38 37 30 / 0.08);
   --color-logo: #dddddd;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);

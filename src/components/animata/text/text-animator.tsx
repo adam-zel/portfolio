@@ -962,6 +962,9 @@ export default function TextAnimator({
     const livePhrases = phrasesRef.current;
     const effectiveSamples = liveSamples?.length ? liveSamples : ["Animation"];
     const effectivePhrases = livePhrases?.length ? livePhrases : [["Build", "the", "line"]];
+    const isDemo =
+      className != null && String(className).includes(TEXT_ANIMATOR_DEMO_CLASS);
+    let mounted = true;
 
     const launch = () => {
       let loop: Promise<void>;
@@ -975,20 +978,24 @@ export default function TextAnimator({
         loop = runGenericLoop(controller, spec, effectiveSamples);
       }
       void loop.catch((error) => {
-        if (!controller.cancelled) {
-          console.error(`Failed to run text animation "${spec.id ?? "unknown"}"`, error);
-          setFailed(true);
-          cleanupLoop(controller);
-        }
+        // Guard both cancel and unmount — cleanup may set cancelled after the
+        // catch check but before setFailed, which would warn under StrictMode.
+        if (!mounted || controller.cancelled) return;
+        console.error(`Failed to run text animation "${spec.id ?? "unknown"}"`, error);
+        setFailed(true);
+        cleanupLoop(controller);
       });
     };
 
-    schedule(controller, launch, Math.random() * 400);
+    // Demo tiles stagger start for visual variety; product usage launches immediately
+    // so the first title is not blank for up to 400ms.
+    schedule(controller, launch, isDemo ? Math.random() * 400 : 0);
 
     return () => {
+      mounted = false;
       cleanupLoop(controller);
     };
-  }, [spec, samplesKey, phrasesKey, speed, holdMs, gapMs, yTravel, titleClassName]);
+  }, [spec, samplesKey, phrasesKey, speed, holdMs, gapMs, yTravel, titleClassName, className]);
 
   const demoMode = className != null && String(className).includes(TEXT_ANIMATOR_DEMO_CLASS);
 

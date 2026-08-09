@@ -41,23 +41,29 @@ export function ProjectCard({
       }}
       onKeyDown={handleKeyDown}
       className={cn(
-        'project-card flex w-full items-center gap-3 rounded-sm border p-4 text-left',
+        'project-card flex w-full items-center gap-3 rounded-sm border-[0.5px] border-solid p-4 text-left',
         'border-[color:var(--color-border)] bg-[color:var(--color-card)]',
-        active && 'border-[color:var(--color-ink)]/25 bg-[#ebe9e3]',
+        'hover:bg-[color:var(--color-card-active)]',
+        active && 'bg-[color:var(--color-card-active)]',
         revealed ? 'project-card--revealed' : 'project-card--hidden pointer-events-none',
       )}
       style={style}
     >
-      <div
+      <img
+        src={project.logo}
+        alt=""
         aria-hidden
         data-testid={`project-logo-${project.id}`}
-        className="size-16 shrink-0 rounded-2xl bg-[color:var(--color-logo)]"
+        className="size-16 shrink-0 object-cover"
+        width={64}
+        height={64}
+        draggable={false}
       />
       <div className="flex min-w-0 flex-1 flex-col items-start">
         <span className="text-sm leading-[140%] text-[color:var(--color-ink)]">
           {project.title}
         </span>
-        <span className="text-sm leading-[140%] text-[color:var(--color-ink-muted)]">
+        <span className="text-sm leading-[140%] text-balance text-[color:var(--color-ink-muted)]">
           {project.blurb}
         </span>
       </div>

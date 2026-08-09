@@ -2,50 +2,48 @@ export type Project = {
   id: string
   title: string
   blurb: string
+  logo: string
 }
 
 export const PROJECTS: Project[] = [
   {
     id: 'programa',
     title: 'Programa',
-    blurb:
-      'Design management software for interior designers and architects.',
+    blurb: 'Design management for interior designers and architects.',
+    logo: '/project-icons/programa.png',
   },
   {
     id: 'pennant',
     title: 'Pennant',
     blurb:
-      'Design management software for interior designers and architects.',
-  },
-  {
-    id: 'pocket-casts',
-    title: 'Pocket Casts',
-    blurb:
-      'Design management software for interior designers and architects.',
-  },
-  {
-    id: 'woocommerce',
-    title: 'WooCommerce',
-    blurb:
-      'Design management software for interior designers and architects.',
+      'Your baseball companion for following your teams journey through the season.',
+    logo: '/project-icons/pennant.png',
   },
   {
     id: 'thiings',
     title: 'Thiings',
     blurb:
-      'Design management software for interior designers and architects.',
+      'Capture, organize, and find your things without leaving your desktop.',
+    logo: '/project-icons/thiings.png',
+  },
+  {
+    id: 'pocket-casts',
+    title: 'Pocket Casts',
+    blurb:
+      'Podcast platform built by podcast listeners, for podcast listeners.',
+    logo: '/project-icons/pocket-casts.webp',
+  },
+  {
+    id: 'woocommerce',
+    title: 'WooCommerce',
+    blurb: 'The most flexible ecommerce platform that grows with you.',
+    logo: '/project-icons/woocommerce.webp',
   },
   {
     id: 'skedulo',
     title: 'Skedulo',
-    blurb:
-      'Design management software for interior designers and architects.',
-  },
-  {
-    id: 'guvera-music',
-    title: 'Guvera Music',
-    blurb:
-      'Design management software for interior designers and architects.',
+    blurb: 'Take your deskless workforce to new heights.',
+    logo: '/project-icons/skedulo.webp',
   },
 ]
 

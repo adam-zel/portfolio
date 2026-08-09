@@ -20,4 +20,10 @@ A short window after a click-to-jump where Spotlight ignores media-root intersec
 Audio feedback on a project card for hover, pointer press, and keyboard activation. Cues are independent of Card reveal and Spotlight selection: sound must not gate on reduced-motion preference, and cue wiring must stay additive so it does not change which row is Active or whether a row is revealed.
 
 ### Identity subtitle
-The muted line under the name in the left column. It cycles through a fixed ordered list of personality titles via character morph, with a readable dwell and stable width. Distinct from the static name and from project-card copy.
+The muted line under the name in the left column. It cycles through a fixed ordered list of personality titles with a readable dwell and stable width. Motion uses a masked upward reveal (not a character morph). Distinct from the static name and from project-card copy.
+
+### Readable dwell
+How long an Identity subtitle title stays fully visible after its enter phase finishes, before exit begins. Not the same as the time until the next title mounts (that also includes exit and swap delays).
+
+### Advance interval
+The full time from one title mount until the next title mounts on the sequential swap path (enter + readable dwell + exit + micro-delay). Test mocks that only tick the Readable dwell will silent-pass against production.

@@ -5,6 +5,7 @@ import App from '@/App'
 import { ProjectCard } from '@/components/portfolio/ProjectCard'
 import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
 import { PROJECTS } from '@/data/projects'
+import { mockPrefersReducedMotion } from '@/test/matchMedia'
 
 const bind = vi.fn()
 const play = vi.fn()
@@ -21,7 +22,7 @@ describe('Portfolio Cuelume cues', () => {
     Element.prototype.scrollIntoView = vi.fn()
   })
 
-  it('calls bind once when the app shell mounts', () => {
+  it('calls bind when the app shell mounts', () => {
     render(<App />)
     expect(bind).toHaveBeenCalled()
   })
@@ -45,45 +46,25 @@ describe('Portfolio Cuelume cues', () => {
     )
   })
 
-  it('plays toggle once on Enter and activates the project via native click', async () => {
-    const user = userEvent.setup()
-    render(<PortfolioPage forceDesktop forceBendOff />)
-    const card = screen.getByTestId('project-card-pennant')
-    card.focus()
-    await user.keyboard('{Enter}')
-    expect(play).toHaveBeenCalledWith('toggle')
-    expect(play.mock.calls.filter((call) => call[0] === 'toggle')).toHaveLength(
-      1,
-    )
-    expect(card).toHaveAttribute('aria-current', 'true')
-  })
-
-  it('plays toggle once on Space activation', async () => {
-    const user = userEvent.setup()
-    render(<PortfolioPage forceDesktop forceBendOff />)
-    const card = screen.getByTestId('project-card-pennant')
-    card.focus()
-    await user.keyboard(' ')
-    expect(play).toHaveBeenCalledWith('toggle')
-    expect(play.mock.calls.filter((call) => call[0] === 'toggle')).toHaveLength(
-      1,
-    )
-  })
+  it.each([
+    ['Enter', '{Enter}'],
+    ['Space', ' '],
+  ] as const)(
+    'plays toggle once on %s and activates the project via native click',
+    async (_label, key) => {
+      const user = userEvent.setup()
+      render(<PortfolioPage forceDesktop forceBendOff />)
+      const card = screen.getByTestId('project-card-pennant')
+      card.focus()
+      await user.keyboard(key)
+      expect(play).toHaveBeenCalledTimes(1)
+      expect(play).toHaveBeenCalledWith('toggle')
+      expect(card).toHaveAttribute('aria-current', 'true')
+    },
+  )
 
   it('keeps cue attributes and keyboard toggle under reduced motion', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: (query: string) => ({
-        matches: query.includes('prefers-reduced-motion'),
-        media: query,
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        addListener: () => {},
-        removeListener: () => {},
-        dispatchEvent: () => false,
-        onchange: null,
-      }),
-    })
+    mockPrefersReducedMotion()
 
     const user = userEvent.setup()
     render(<PortfolioPage forceDesktop forceBendOff />)
@@ -118,4 +99,18 @@ describe('Portfolio Cuelume cues', () => {
     fireEvent.keyDown(card, { key: 'Enter', repeat: true })
     expect(play).not.toHaveBeenCalled()
   })
+
+  it.each(['a', 'Tab'] as const)(
+    'does not play toggle on non-activation keydown (%s)',
+    (key) => {
+      const onSelect = vi.fn()
+      render(
+        <ProjectCard project={PROJECTS[1]!} revealed onSelect={onSelect} />,
+      )
+      const card = screen.getByTestId('project-card-pennant')
+      fireEvent.keyDown(card, { key })
+      expect(play).not.toHaveBeenCalled()
+      expect(onSelect).not.toHaveBeenCalled()
+    },
+  )
 })

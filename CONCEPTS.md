@@ -15,3 +15,6 @@ The progressive show of left-column project rows as they enter the left scrollpo
 
 ### Programmatic scroll lock
 A short window after a click-to-jump where Spotlight ignores media-root intersection updates so intermediate media blocks cannot steal the Active project during smooth scroll.
+
+### Card interaction cue
+Audio feedback on a project card for hover, pointer press, and keyboard activation. Cues are independent of Card reveal and Spotlight selection: sound must not gate on reduced-motion preference, and cue wiring must stay additive so it does not change which row is Active or whether a row is revealed.

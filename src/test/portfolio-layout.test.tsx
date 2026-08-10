@@ -36,11 +36,11 @@ describe('Portfolio layout', () => {
   it('renders Programa with its Paper media frames', () => {
     render(<PortfolioPage />)
     expect(screen.getByTestId('media-block-programa')).toBeInTheDocument()
-    expect(screen.getByTestId('media-block-programa-1')).toBeInTheDocument()
-    expect(screen.getByTestId('media-block-programa-2')).toBeInTheDocument()
-    expect(screen.getByTestId('media-block-programa-3')).toBeInTheDocument()
+    for (let i = 1; i <= 11; i++) {
+      expect(screen.getByTestId(`media-block-programa-${i}`)).toBeInTheDocument()
+    }
     const first = screen.getByTestId('media-block-programa').querySelector('img')
-    expect(first).toHaveAttribute('src', '/project-media/programa-1.webp')
+    expect(first).toHaveAttribute('src', '/project-media/PRO-01@2x.webp')
     expect(
       screen.getByTestId('right-column').querySelectorAll(
         '[data-testid^="media-block-"]',

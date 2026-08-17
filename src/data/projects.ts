@@ -41,6 +41,12 @@ export const PROJECTS: Project[] = [
     blurb:
       'Capture, organize, and find your things without leaving your desktop.',
     logo: '/project-icons/thiings.png',
+    images: [
+      '/project-media/THII-01@2x.webp',
+      '/project-media/THII-02@2x.webp',
+      '/project-media/THII-03@2x.webp',
+      '/project-media/THII-04@2x.webp',
+    ],
   },
   {
     id: 'pocket-casts',
@@ -48,6 +54,16 @@ export const PROJECTS: Project[] = [
     blurb:
       'Podcast platform built by podcast listeners, for podcast listeners.',
     logo: '/project-icons/pocket-casts.webp',
+    images: [
+      '/project-media/PKTC-01@2x.webp',
+      '/project-media/PKTC-02@2x.webp',
+      '/project-media/PKTC-03@2x.webp',
+      '/project-media/PKTC-04@2x.webp',
+      '/project-media/PKTC-05@2x.webp',
+      '/project-media/PKTC-06@2x.webp',
+      '/project-media/PKTC-07@2x.webp',
+      '/project-media/PKTC-08@2x.webp',
+    ],
   },
   {
     id: 'woocommerce',
@@ -60,6 +76,13 @@ export const PROJECTS: Project[] = [
     title: 'Skedulo',
     blurb: 'Take your deskless workforce to new heights.',
     logo: '/project-icons/skedulo.webp',
+    images: [
+      '/project-media/SKED-01@2x.webp',
+      '/project-media/SKED-02@2x.webp',
+      '/project-media/SKED-03@2x.webp',
+      '/project-media/SKED-04@2x.webp',
+      '/project-media/SKED-05@2x.webp',
+    ],
   },
 ]
 

@@ -7,17 +7,18 @@ type MediaBlockProps = {
   projectId: string
   title: string
   index?: number
-  imageSrc?: string
+  mediaSrc?: string
 }
 
 export function MediaBlock({
   projectId,
   title,
   index = 0,
-  imageSrc,
+  mediaSrc,
 }: MediaBlockProps) {
   const label =
     index > 0 ? `${title} media ${index + 1}` : `${title} media`
+  const isVideo = mediaSrc?.toLowerCase().endsWith('.webm') ?? false
 
   return (
     <section
@@ -32,13 +33,24 @@ export function MediaBlock({
       className="relative w-full shrink-0 overflow-hidden rounded-sm border border-[color:var(--color-border)] bg-[color:var(--color-card)]"
       style={{ aspectRatio: `${MEDIA_ASPECT_RATIO}` }}
     >
-      {imageSrc ? (
-        <img
-          src={imageSrc}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          draggable={false}
-        />
+      {mediaSrc ? (
+        isVideo ? (
+          <video
+            src={mediaSrc}
+            className="absolute inset-0 h-full w-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : (
+          <img
+            src={mediaSrc}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+            draggable={false}
+          />
+        )
       ) : null}
     </section>
   )

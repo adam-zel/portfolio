@@ -3,7 +3,9 @@ export type Project = {
   title: string
   blurb: string
   logo: string
-  /** Media frame images for the right column. Empty = one placeholder frame. */
+  /** Media frame assets for the right column. Empty = one placeholder frame. */
+  media?: string[]
+  /** Back-compat for existing image-only project definitions. */
   images?: string[]
 }
 
@@ -34,6 +36,7 @@ export const PROJECTS: Project[] = [
     blurb:
       'Your baseball companion for following your teams journey through the season.',
     logo: '/project-icons/pennant.png',
+    media: ['/project-media/PEN-01.webm'],
   },
   {
     id: 'thiings',
@@ -104,8 +107,12 @@ export function mediaElementId(projectId: string, index = 0) {
 
 /** Flat list of media frames to render in the right column. */
 export function projectMediaFrames(project: Project) {
-  const images = project.images?.length ? project.images : [undefined]
-  return images.map((src, index) => ({
+  const media = project.media?.length
+    ? project.media
+    : project.images?.length
+      ? project.images
+      : [undefined]
+  return media.map((src, index) => ({
     projectId: project.id,
     title: project.title,
     index,

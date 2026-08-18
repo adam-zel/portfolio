@@ -20,7 +20,7 @@ function MediaStack({ projects }: { projects: Project[] }) {
           projectId={frame.projectId}
           title={frame.title}
           index={frame.index}
-          imageSrc={frame.src}
+          mediaSrc={frame.src}
         />
       ))}
     </div>

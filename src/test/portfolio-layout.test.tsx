@@ -8,11 +8,11 @@ import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
 const EXPECTED_MEDIA_FRAME_COUNT = PROJECTS.flatMap(projectMediaFrames).length
 
 describe('Portfolio layout', () => {
-  it('ships a public file for every project logo and media image path', () => {
+  it('ships a public file for every project logo and media path', () => {
     for (const project of PROJECTS) {
       const absolute = path.join(process.cwd(), 'public', project.logo.replace(/^\//, ''))
       expect(existsSync(absolute), `missing ${project.logo}`).toBe(true)
-      for (const src of project.images ?? []) {
+      for (const src of project.media ?? project.images ?? []) {
         const mediaPath = path.join(process.cwd(), 'public', src.replace(/^\//, ''))
         expect(existsSync(mediaPath), `missing ${src}`).toBe(true)
       }

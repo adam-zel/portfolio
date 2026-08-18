@@ -48,6 +48,16 @@ describe('Portfolio layout', () => {
     ).toBe(EXPECTED_MEDIA_FRAME_COUNT)
   })
 
+  it('clips Pennant video to the same frame radius as image media', () => {
+    render(<PortfolioPage />)
+    const video = screen.getByTestId('media-block-pennant').querySelector('video')
+    expect(video).toHaveAttribute('src', '/project-media/PEN-01.webm')
+    expect(video).toHaveClass(
+      'rounded-sm',
+      '[clip-path:inset(0_round_var(--radius-sm))]',
+    )
+  })
+
   it('places the project list before media in document order', () => {
     render(<PortfolioPage />)
     const left = screen.getByTestId('left-column')

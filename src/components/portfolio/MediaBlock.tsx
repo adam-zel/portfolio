@@ -30,14 +30,14 @@ export function MediaBlock({
       }
       data-project-id={projectId}
       aria-label={label}
-      className="relative w-full shrink-0 overflow-hidden rounded-sm border border-[color:var(--color-border)] bg-[color:var(--color-card)]"
+      className="relative isolate w-full shrink-0 overflow-hidden rounded-sm border border-[color:var(--color-border)] bg-[color:var(--color-card)]"
       style={{ aspectRatio: `${MEDIA_ASPECT_RATIO}` }}
     >
       {mediaSrc ? (
         isVideo ? (
           <video
             src={mediaSrc}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full overflow-hidden rounded-sm object-cover [clip-path:inset(0_round_var(--radius-sm))]"
             autoPlay
             loop
             muted

@@ -70,6 +70,15 @@ export const PROJECTS: Project[] = [
     title: 'WooCommerce',
     blurb: 'The most flexible ecommerce platform that grows with you.',
     logo: '/project-icons/woocommerce.webp',
+    images: [
+      '/project-media/WOO-01@2x.webp',
+      '/project-media/WOO-02@2x.webp',
+      '/project-media/WOO-03@2x.webp',
+      '/project-media/WOO-04@2x.webp',
+      '/project-media/WOO-05@2x.webp',
+      '/project-media/WOO-06@2x.webp',
+      '/project-media/WOO-07@2x.webp',
+    ],
   },
   {
     id: 'skedulo',

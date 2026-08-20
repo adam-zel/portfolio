@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type KeyboardEvent } from 'react'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import {
   applyAppearance,
@@ -40,11 +40,23 @@ export function ThemeToggle() {
     applyAppearance(mode)
   }
 
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    event.preventDefault()
+    const index = SEGMENTS.findIndex((segment) => segment.value === resolved)
+    const next =
+      event.key === 'ArrowRight'
+        ? SEGMENTS[(index + 1) % SEGMENTS.length]
+        : SEGMENTS[(index - 1 + SEGMENTS.length) % SEGMENTS.length]
+    select(next.value)
+  }
+
   return (
     <div
       role="group"
       aria-label="Color theme"
       data-testid="theme-toggle"
+      onKeyDown={onKeyDown}
       className={cn(
         'flex h-8 w-14 shrink-0 rounded-full p-0.5',
         resolved === 'dark' ? 'bg-[#26241E]' : 'bg-[#E6E5E0]',

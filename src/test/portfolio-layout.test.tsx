@@ -50,8 +50,15 @@ describe('Portfolio layout', () => {
 
   it('clips Pennant video to the same frame radius as image media', () => {
     render(<PortfolioPage />)
-    const video = screen.getByTestId('media-block-pennant').querySelector('video')
+    const video = screen
+      .getByTestId('media-block-pennant')
+      .querySelector('video') as HTMLVideoElement
     expect(video).toHaveAttribute('src', '/project-media/PEN-01.webm')
+    expect(video).toHaveAttribute('loop')
+    expect(video.muted).toBe(true)
+    expect(video).toHaveAttribute('playsinline')
+    expect(video).toHaveAttribute('preload', 'metadata')
+    expect(video).not.toHaveAttribute('autoplay')
     expect(video).toHaveClass(
       'rounded-sm',
       '[clip-path:inset(0_round_var(--radius-sm))]',

@@ -21,6 +21,8 @@ export function useActiveProject({
   )
   const programmaticLockRef = useRef<string | null>(null)
   const settleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const scrollEndListenerRef = useRef<(() => void) | null>(null)
+  const pickBestProjectRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     return () => {
@@ -28,8 +30,15 @@ export function useActiveProject({
         clearTimeout(settleTimerRef.current)
         settleTimerRef.current = null
       }
+      if (scrollEndListenerRef.current && scrollRoot) {
+        scrollRoot.removeEventListener(
+          'scrollend',
+          scrollEndListenerRef.current,
+        )
+        scrollEndListenerRef.current = null
+      }
     }
-  }, [])
+  }, [scrollRoot])
 
   useEffect(() => {
     if (!enabled || projects.length === 0 || !scrollRoot) return
@@ -58,10 +67,11 @@ export function useActiveProject({
         )
       }
     }
+    pickBestProjectRef.current = pickBestProject
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (disposed || programmaticLockRef.current) return
+        if (disposed) return
 
         for (const entry of entries) {
           ratiosByElement.set(
@@ -69,7 +79,11 @@ export function useActiveProject({
             entry.isIntersecting ? entry.intersectionRatio : 0,
           )
         }
-        pickBestProject()
+
+        // Keep ratios fresh during programmatic jumps; only defer selection.
+        if (!programmaticLockRef.current) {
+          pickBestProject()
+        }
       },
       {
         root: scrollRoot,
@@ -86,20 +100,41 @@ export function useActiveProject({
     return () => {
       disposed = true
       observer.disconnect()
+      pickBestProjectRef.current = () => {}
     }
   }, [enabled, projects, scrollRoot])
 
   const selectProject = (projectId: string) => {
+    if (settleTimerRef.current !== null) {
+      clearTimeout(settleTimerRef.current)
+      settleTimerRef.current = null
+    }
+    if (scrollEndListenerRef.current && scrollRoot) {
+      scrollRoot.removeEventListener('scrollend', scrollEndListenerRef.current)
+      scrollEndListenerRef.current = null
+    }
+
     programmaticLockRef.current = projectId
     setActiveProjectId(projectId)
 
+    let settleTimer: ReturnType<typeof setTimeout> | null = null
+    let onScrollEnd: (() => void) | null = null
+
     const clearLock = () => {
-      if (programmaticLockRef.current === projectId) {
+      const unlockedThisJump = programmaticLockRef.current === projectId
+      if (unlockedThisJump) {
         programmaticLockRef.current = null
       }
-      if (settleTimerRef.current !== null) {
-        clearTimeout(settleTimerRef.current)
+      if (settleTimer !== null && settleTimerRef.current === settleTimer) {
+        clearTimeout(settleTimer)
         settleTimerRef.current = null
+      }
+      if (onScrollEnd && scrollEndListenerRef.current === onScrollEnd && scrollRoot) {
+        scrollRoot.removeEventListener('scrollend', onScrollEnd)
+        scrollEndListenerRef.current = null
+      }
+      if (unlockedThisJump) {
+        pickBestProjectRef.current()
       }
     }
 
@@ -121,15 +156,16 @@ export function useActiveProject({
       return
     }
 
-    const onScrollEnd = () => {
-      scrollRoot.removeEventListener('scrollend', onScrollEnd)
+    onScrollEnd = () => {
       clearLock()
     }
+    scrollEndListenerRef.current = onScrollEnd
     scrollRoot.addEventListener('scrollend', onScrollEnd, { once: true })
-    settleTimerRef.current = setTimeout(() => {
-      scrollRoot.removeEventListener('scrollend', onScrollEnd)
+
+    settleTimer = setTimeout(() => {
       clearLock()
     }, PROGRAMMATIC_SCROLL_SETTLE_MS)
+    settleTimerRef.current = settleTimer
   }
 
   return {

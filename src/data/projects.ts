@@ -47,10 +47,9 @@ export const PROJECTS: Project[] = [
       '/project-media/PEN-08.webm',
       '/project-media/PEN-09.webp',
       '/project-media/PEN-10.webm',
-      '/project-media/PEN-11.webm',
-      '/project-media/PEN-12.webp',
+      '/project-media/PEN-11.webp',
+      '/project-media/PEN-12.webm',
       '/project-media/PEN-13.webp',
-      '/project-media/PEN-14.webp',
     ],
   },
   {

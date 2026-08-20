@@ -14,7 +14,7 @@ The project currently featured by Spotlight. It must remain visible and focusabl
 The progressive show of left-column project rows as they enter the left scrollport. Reveal is additive and must treat the Active project as revealed so Spotlight never highlights a hidden row.
 
 ### Programmatic scroll lock
-A short window after a click-to-jump where Spotlight ignores media-root intersection updates so intermediate media blocks cannot steal the Active project during smooth scroll.
+A short window after a click-to-jump where Spotlight defers Active project selection from media-root intersections so intermediate media blocks cannot steal the Active project during smooth scroll. Intersection ratios still update during the lock so unlock can reconcile from fresh viewport data.
 
 ### Card interaction cue
 Audio feedback on a project card for hover, pointer press, and keyboard activation. Cues are independent of Card reveal and Spotlight selection: sound must not gate on reduced-motion preference, and cue wiring must stay additive so it does not change which row is Active or whether a row is revealed.

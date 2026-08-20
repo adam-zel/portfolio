@@ -36,7 +36,22 @@ export const PROJECTS: Project[] = [
     blurb:
       'Your baseball companion for following your teams journey through the season.',
     logo: '/project-icons/pennant.png',
-    media: ['/project-media/PEN-01.webm'],
+    media: [
+      '/project-media/PEN-01.webm',
+      '/project-media/PEN-02.webp',
+      '/project-media/PEN-03.webm',
+      '/project-media/PEN-04.webp',
+      '/project-media/PEN-05.webm',
+      '/project-media/PEN-06.webp',
+      '/project-media/PEN-07.webp',
+      '/project-media/PEN-08.webm',
+      '/project-media/PEN-09.webp',
+      '/project-media/PEN-10.webm',
+      '/project-media/PEN-11.webm',
+      '/project-media/PEN-12.webp',
+      '/project-media/PEN-13.webp',
+      '/project-media/PEN-14.webp',
+    ],
   },
   {
     id: 'thiings',

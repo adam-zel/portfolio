@@ -16,6 +16,7 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color: var(--color-ink);
   background: var(--color-ground);
+  color-scheme: light;
   font-family:
     "SF Pro Text",
     "SF Pro Display",
@@ -131,6 +132,17 @@ body {
 }
 
 .dark {
+  /* Portfolio chrome — Paper HTV-0 (unlayered so these win over @theme / @layer) */
+  --color-ground: #14120b;
+  --color-ink: #edecec;
+  --color-ink-muted: rgb(237 236 236 / 0.6);
+  --color-card: #1b1913;
+  --color-card-active: #26241e;
+  --color-border: rgb(237 236 236 / 0.08);
+  color: var(--color-ink);
+  background: var(--color-ground);
+  color-scheme: dark;
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

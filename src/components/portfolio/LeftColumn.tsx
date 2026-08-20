@@ -3,6 +3,7 @@ import type { Project } from '@/data/projects'
 import { IDENTITY_TYPE_CLASS } from '@/data/identityTitles'
 import { IdentitySubtitle } from '@/components/portfolio/IdentitySubtitle'
 import { ProjectCard } from '@/components/portfolio/ProjectCard'
+import { ThemeToggle } from '@/components/portfolio/ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const CARD_REVEAL_STAGGER_MS = 40
@@ -36,7 +37,10 @@ export function LeftColumn({
       className="scrollbar-none flex w-full shrink-0 flex-col overflow-hidden bg-[color:var(--color-ground)] md:h-svh md:w-[400px] md:overflow-y-auto md:overscroll-contain"
     >
       <div data-testid="project-list" className="flex flex-col gap-2 p-2 md:pr-0">
-        <header className="flex h-80 shrink-0 flex-col items-center justify-center text-center">
+        <header className="relative flex h-80 shrink-0 flex-col items-center justify-center text-center">
+          <div className="absolute top-2 right-2 z-10">
+            <ThemeToggle />
+          </div>
           <h1
             className={cn(
               IDENTITY_TYPE_CLASS,

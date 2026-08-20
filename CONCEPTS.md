@@ -27,3 +27,9 @@ How long an Identity subtitle title stays fully visible after its enter phase fi
 
 ### Advance interval
 The full time from one title mount until the next title mounts on the sequential swap path (enter + readable dwell + exit + micro-delay). Test mocks that only tick the Readable dwell will silent-pass against production.
+
+### Resolved appearance
+The effective light or dark chrome mode for the portfolio home. Until a Session override exists, Resolved appearance tracks the OS color scheme (including live changes). Distinct from raw OS preference once an override is set.
+
+### Session override
+A visitor-forced light or dark choice set by the header theme toggle. It applies only for the current browser session (survives reload in that session; clears when the session ends) and does not remember across visits.

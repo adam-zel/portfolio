@@ -52,20 +52,54 @@ describe('Portfolio layout', () => {
     render(<PortfolioPage />)
     const videoBlock = screen.getByTestId('media-block-pennant')
     const video = videoBlock.querySelector('video') as HTMLVideoElement
-    expect(videoBlock).toHaveClass('media-frame', 'rounded-sm', 'overflow-hidden')
+    expect(videoBlock).toHaveClass(
+      'media-frame',
+      'isolate',
+      'rounded-sm',
+      'overflow-hidden',
+    )
     expect(video).toHaveAttribute('src', '/project-media/PEN-01.webm')
     expect(video).toHaveAttribute('loop')
     expect(video.muted).toBe(true)
     expect(video).toHaveAttribute('playsinline')
     expect(video).toHaveAttribute('preload', 'metadata')
     expect(video).not.toHaveAttribute('autoplay')
-    expect(video).toHaveClass('rounded-[inherit]', 'object-cover')
+    expect(video).toHaveClass(
+      'rounded-sm',
+      'overflow-hidden',
+      'object-cover',
+      '[clip-path:inset(0_round_0.375rem)]',
+    )
 
     const imageBlock = screen.getByTestId('media-block-pennant-1')
     const image = imageBlock.querySelector('img') as HTMLImageElement
-    expect(imageBlock).toHaveClass('media-frame', 'rounded-sm', 'overflow-hidden')
+    expect(imageBlock).toHaveClass(
+      'media-frame',
+      'isolate',
+      'rounded-sm',
+      'overflow-hidden',
+    )
     expect(image).toHaveAttribute('src', '/project-media/PEN-02.webp')
-    expect(image).toHaveClass('rounded-[inherit]', 'object-cover')
+    expect(image).toHaveClass(
+      'rounded-sm',
+      'overflow-hidden',
+      'object-cover',
+      '[clip-path:inset(0_round_0.375rem)]',
+    )
+
+    // Every Pennant video frame gets the same clip — not only the first.
+    const pennantVideos = screen
+      .getByTestId('right-media-stack')
+      .querySelectorAll('video[src*="PEN-"]')
+    expect(pennantVideos.length).toBeGreaterThan(1)
+    pennantVideos.forEach((el) => {
+      expect(el).toHaveClass(
+        'rounded-sm',
+        'overflow-hidden',
+        '[clip-path:inset(0_round_0.375rem)]',
+      )
+      expect(el.closest('.media-frame')).toHaveClass('isolate', 'overflow-hidden')
+    })
   })
 
   it('places the project list before media in document order', () => {

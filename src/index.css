@@ -204,20 +204,23 @@ body {
 
 /*
   Media frames: iOS/Safari often ignores overflow+radius on replaced content
-  (especially <video>). Force a composited clip so corners match rounded-sm.
+  (especially <video>). Clip the frame and the media element; literal rem
+  matches --radius-sm (CSS vars inside clip-path are unreliable on WebKit).
 */
 .media-frame {
+  isolation: isolate;
   transform: translateZ(0);
   -webkit-mask-image: -webkit-radial-gradient(white, black);
-  /* Literal rem matches --radius-sm (0.625rem * 0.6); vars inside clip-path
-     are unreliable on mobile WebKit. */
   clip-path: inset(0 round 0.375rem);
 }
 
 .media-frame > img,
 .media-frame > video {
+  border-radius: 0.375rem;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  /* Belt-and-suspenders: clip the replaced layer itself on mobile WebKit. */
+  clip-path: inset(0 round 0.375rem);
 }
 
 .project-card {

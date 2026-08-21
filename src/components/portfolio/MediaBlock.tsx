@@ -5,8 +5,14 @@ import { cn } from '@/lib/utils'
 /** Historical portfolio media frame ratio (1496×997). */
 export const MEDIA_ASPECT_RATIO = 1496 / 997
 
+/**
+ * Fill the frame edge-to-edge. Explicit radius + clip on the replaced element —
+ * iOS/Safari often ignores parent overflow for <video>.
+ * 0.375rem matches --radius-sm (Tailwind rounded-sm); CSS vars in clip-path
+ * are unreliable on mobile WebKit.
+ */
 const mediaFillClassName =
-  'absolute inset-0 block h-full w-full rounded-[inherit] object-cover'
+  'absolute inset-0 block h-full w-full overflow-hidden rounded-sm object-cover [clip-path:inset(0_round_0.375rem)]'
 
 type MediaBlockProps = {
   projectId: string
@@ -68,7 +74,7 @@ export function MediaBlock({
       data-project-id={projectId}
       aria-label={label}
       className={cn(
-        'media-frame relative w-full shrink-0 overflow-hidden rounded-sm',
+        'media-frame relative isolate w-full shrink-0 overflow-hidden rounded-sm',
         'border border-[color:var(--color-border)] bg-[color:var(--color-card)]',
       )}
       style={{ aspectRatio: `${MEDIA_ASPECT_RATIO}` }}

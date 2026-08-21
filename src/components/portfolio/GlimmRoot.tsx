@@ -64,7 +64,10 @@ type GlimmRootProps = {
   children: ReactNode
 }
 
-/** Portfolio Glimm shell — pins the sweep canvas to the real viewport (body). */
+/**
+ * Portfolio Glimm shell — pins the sweep canvas to the real viewport (body).
+ * Stock provider defaults (glimm@0.1.4) with a custom cosine palette.
+ */
 export function GlimmRoot({ children }: GlimmRootProps) {
   const mountedRef = useRef(true)
 
@@ -79,12 +82,12 @@ export function GlimmRoot({ children }: GlimmRootProps) {
 
   return (
     <GlimmProvider
-      palette="prism"
-      easing="easeOutCubic"
-      sweepMs={880}
-      outroMs={520}
-      swellAmount={0.6}
-      rippleAmount={0.85}
+      palette={{
+        a: [0.58, 0.5, 0.0],
+        b: [0.46, 0.39, 0.87],
+        c: [0.52, 0.47, 0.26],
+        d: [0.49, 0.46, 0.79],
+      }}
       zIndex={2147483646}
       onController={(ctrl) => {
         if (!mountedRef.current) return

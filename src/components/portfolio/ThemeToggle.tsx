@@ -53,11 +53,9 @@ export function ThemeToggle() {
     }
 
     activeSweepRef.current?.cancel()
-    // Provider defaults (palette, timing, swell) live on GlimmRoot.
+    // Provider defaults match glimm.dev; only sweep direction follows the toggle.
     const handle = sweep(() => applyAppearance(mode), {
       direction: mode === 'dark' ? 'ltr' : 'rtl',
-      midpoint: 0.52,
-      brightness: mode === 'dark' ? 0.85 : 1,
     })
     activeSweepRef.current = handle
     void handle.done.finally(() => {

@@ -64,10 +64,11 @@ describe('Portfolio layout', () => {
     expect(video).toHaveAttribute('playsinline')
     expect(video).toHaveAttribute('preload', 'metadata')
     expect(video).not.toHaveAttribute('autoplay')
-    expect(video).toHaveClass(
-      'rounded-sm',
+    expect(video).toHaveClass('object-cover')
+    expect(video.parentElement).toHaveClass(
+      'media-clip',
       'overflow-hidden',
-      'object-cover',
+      'rounded-sm',
       '[clip-path:inset(0_round_0.375rem)]',
     )
 
@@ -80,22 +81,33 @@ describe('Portfolio layout', () => {
       'overflow-hidden',
     )
     expect(image).toHaveAttribute('src', '/project-media/PEN-02.webp')
-    expect(image).toHaveClass(
-      'rounded-sm',
-      'overflow-hidden',
-      'object-cover',
-      '[clip-path:inset(0_round_0.375rem)]',
-    )
+    expect(image).toHaveClass('object-cover')
+
+    const stack = screen.getByTestId('right-media-stack')
 
     // Every Pennant video frame gets the same clip — not only the first.
-    const pennantVideos = screen
-      .getByTestId('right-media-stack')
-      .querySelectorAll('video[src*="PEN-"]')
+    const pennantVideos = stack.querySelectorAll('video[src*="PEN-"]')
     expect(pennantVideos.length).toBeGreaterThan(1)
     pennantVideos.forEach((el) => {
-      expect(el).toHaveClass(
-        'rounded-sm',
+      expect(el.closest('.media-clip')).toHaveClass(
         'overflow-hidden',
+        'rounded-sm',
+        '[clip-path:inset(0_round_0.375rem)]',
+      )
+      expect(el.closest('.media-frame')).toHaveClass('isolate', 'overflow-hidden')
+    })
+
+    // iOS ignores overflow/radius on <img> the same way it does on <video>.
+    // Clip must live on a wrapping non-replaced element — every still, not only PEN-02.
+    const pennantImages = stack.querySelectorAll('img[src*="PEN-"]')
+    expect(pennantImages.length).toBeGreaterThan(1)
+    pennantImages.forEach((el) => {
+      const clip = el.parentElement
+      expect(clip?.tagName).toBe('DIV')
+      expect(clip).toHaveClass(
+        'media-clip',
+        'overflow-hidden',
+        'rounded-sm',
         '[clip-path:inset(0_round_0.375rem)]',
       )
       expect(el.closest('.media-frame')).toHaveClass('isolate', 'overflow-hidden')

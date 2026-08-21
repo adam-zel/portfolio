@@ -6,13 +6,15 @@ import { cn } from '@/lib/utils'
 export const MEDIA_ASPECT_RATIO = 1496 / 997
 
 /**
- * Fill the frame edge-to-edge. Explicit radius + clip on the replaced element —
- * iOS/Safari often ignores parent overflow for <video>.
- * 0.375rem matches --radius-sm (Tailwind rounded-sm); CSS vars in clip-path
- * are unreliable on mobile WebKit.
+ * Clip lives on this non-replaced shell — iOS/Safari ignores overflow, radius,
+ * and often clip-path on replaced <img> / <video>. 0.375rem matches --radius-sm
+ * (Tailwind rounded-sm); CSS vars in clip-path are unreliable on mobile WebKit.
  */
-const mediaFillClassName =
-  'absolute inset-0 block h-full w-full overflow-hidden rounded-sm object-cover [clip-path:inset(0_round_0.375rem)]'
+const mediaClipClassName =
+  'media-clip absolute inset-0 overflow-hidden rounded-sm [clip-path:inset(0_round_0.375rem)]'
+
+/** Fill the clip shell edge-to-edge. */
+const mediaFillClassName = 'block h-full w-full object-cover'
 
 type MediaBlockProps = {
   projectId: string
@@ -80,24 +82,26 @@ export function MediaBlock({
       style={{ aspectRatio: `${MEDIA_ASPECT_RATIO}` }}
     >
       {mediaSrc ? (
-        isVideo ? (
-          <video
-            ref={videoRef}
-            src={mediaSrc}
-            className={mediaFillClassName}
-            loop
-            muted
-            playsInline
-            preload="metadata"
-          />
-        ) : (
-          <img
-            src={mediaSrc}
-            alt=""
-            className={mediaFillClassName}
-            draggable={false}
-          />
-        )
+        <div className={mediaClipClassName}>
+          {isVideo ? (
+            <video
+              ref={videoRef}
+              src={mediaSrc}
+              className={mediaFillClassName}
+              loop
+              muted
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            <img
+              src={mediaSrc}
+              alt=""
+              className={mediaFillClassName}
+              draggable={false}
+            />
+          )}
+        </div>
       ) : null}
     </section>
   )

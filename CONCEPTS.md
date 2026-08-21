@@ -45,3 +45,6 @@ Theme change with no Glimm sweep (keyboard arrows). Cancels any in-flight sweep 
 
 ### Sweep cancel
 Glimm's mid-flight abort: stops the animation loop but leaves the band's alpha and progress so a following sweep can continue. Instant theme path must clear the overlay after Sweep cancel; pointer-to-pointer replacement may rely on the next sweep instead.
+
+### Media frame
+The fixed-aspect card in the right column that shows one project image or video. Shared radius and clip must apply to the replaced media element itself on mobile WebKit — parent overflow alone is not enough for `<video>`.

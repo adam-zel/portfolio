@@ -35,6 +35,13 @@ describe('Portfolio Cuelume cues', () => {
     expect(card).not.toHaveAttribute('data-cuelume-toggle')
   })
 
+  it('marks the theme toggle with hover tick and press attributes', () => {
+    render(<PortfolioPage forceDesktop />)
+    const toggle = screen.getByTestId('theme-toggle')
+    expect(toggle).toHaveAttribute('data-cuelume-hover', 'tick')
+    expect(toggle).toHaveAttribute('data-cuelume-press')
+  })
+
   it('does not play toggle on pointer click while still selecting the project', async () => {
     const user = userEvent.setup()
     render(<PortfolioPage forceDesktop />)

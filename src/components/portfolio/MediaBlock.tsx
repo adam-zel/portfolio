@@ -1,8 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { mediaElementId } from '@/data/projects'
+import { cn } from '@/lib/utils'
 
 /** Historical portfolio media frame ratio (1496×997). */
 export const MEDIA_ASPECT_RATIO = 1496 / 997
+
+const mediaFillClassName =
+  'absolute inset-0 block h-full w-full rounded-[inherit] object-cover'
 
 type MediaBlockProps = {
   projectId: string
@@ -63,7 +67,10 @@ export function MediaBlock({
       }
       data-project-id={projectId}
       aria-label={label}
-      className="relative isolate w-full shrink-0 overflow-hidden rounded-sm border border-[color:var(--color-border)] bg-[color:var(--color-card)]"
+      className={cn(
+        'media-frame relative w-full shrink-0 overflow-hidden rounded-sm',
+        'border border-[color:var(--color-border)] bg-[color:var(--color-card)]',
+      )}
       style={{ aspectRatio: `${MEDIA_ASPECT_RATIO}` }}
     >
       {mediaSrc ? (
@@ -71,7 +78,7 @@ export function MediaBlock({
           <video
             ref={videoRef}
             src={mediaSrc}
-            className="absolute inset-0 h-full w-full overflow-hidden rounded-sm object-cover [clip-path:inset(0_round_var(--radius-sm))]"
+            className={mediaFillClassName}
             loop
             muted
             playsInline
@@ -81,7 +88,7 @@ export function MediaBlock({
           <img
             src={mediaSrc}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className={mediaFillClassName}
             draggable={false}
           />
         )

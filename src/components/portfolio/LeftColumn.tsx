@@ -10,9 +10,10 @@ const CARD_REVEAL_STAGGER_MS = 40
 
 const revealDelayStyles: CSSProperties[] = []
 
+/** Stagger only reveal motion — theme color swaps must stay simultaneous. */
 function revealDelayStyle(index: number): CSSProperties {
   return (revealDelayStyles[index] ??= {
-    transitionDelay: `${index * CARD_REVEAL_STAGGER_MS}ms`,
+    ['--card-reveal-delay' as string]: `${index * CARD_REVEAL_STAGGER_MS}ms`,
   })
 }
 
@@ -38,7 +39,7 @@ export function LeftColumn({
     >
       <div data-testid="project-list" className="flex flex-col gap-2 p-2 md:pr-0">
         <header className="relative flex h-80 shrink-0 flex-col items-center justify-center text-center">
-          <div className="absolute top-2 right-2 z-10">
+          <div className="absolute top-1 right-1 z-10">
             <ThemeToggle />
           </div>
           <h1

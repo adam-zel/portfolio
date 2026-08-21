@@ -33,3 +33,15 @@ The effective light or dark chrome mode for the portfolio home. Until a Session 
 
 ### Session override
 A visitor-forced light or dark choice set by the header theme toggle. It applies only for the current browser session (survives reload in that session; clears when the session ends) and does not remember across visits.
+
+### Glimm sweep
+The full-viewport prism band that animates when the visitor pointer-toggles appearance. Appearance class changes at Midpoint appearance apply, not at click start.
+
+### Midpoint appearance apply
+The moment during a Glimm sweep when Resolved appearance is written to the document (dark class on/off). Distinct from writing Session override, which happens immediately when the toggle is activated.
+
+### Instant theme path
+Theme change with no Glimm sweep (keyboard arrows). Cancels any in-flight sweep and must clear the band; Sweep cancel alone leaves the overlay visible.
+
+### Sweep cancel
+Glimm's mid-flight abort: stops the animation loop but leaves the band's alpha and progress so a following sweep can continue. Instant theme path must clear the overlay after Sweep cancel; pointer-to-pointer replacement may rely on the next sweep instead.

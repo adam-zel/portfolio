@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PROJECTS } from '@/data/projects'
+import { GlimmRoot } from '@/components/portfolio/GlimmRoot'
 import { LeftColumn } from '@/components/portfolio/LeftColumn'
 import { RightColumn } from '@/components/portfolio/RightColumn'
 import { useActiveProject } from '@/hooks/useActiveProject'
@@ -42,17 +43,19 @@ export function PortfolioPage({
     : 'flex min-h-svh flex-col items-stretch'
 
   return (
-    <main data-testid="portfolio-page" className={layoutClass}>
-      <LeftColumn
-        projects={PROJECTS}
-        activeProjectId={activeProjectId}
-        revealedIds={revealedIds}
-        onSelectProject={selectProject}
-      />
-      <RightColumn
-        projects={PROJECTS}
-        onScrollRootChange={setScrollRoot}
-      />
-    </main>
+    <GlimmRoot>
+      <main data-testid="portfolio-page" className={layoutClass}>
+        <LeftColumn
+          projects={PROJECTS}
+          activeProjectId={activeProjectId}
+          revealedIds={revealedIds}
+          onSelectProject={selectProject}
+        />
+        <RightColumn
+          projects={PROJECTS}
+          onScrollRootChange={setScrollRoot}
+        />
+      </main>
+    </GlimmRoot>
   )
 }

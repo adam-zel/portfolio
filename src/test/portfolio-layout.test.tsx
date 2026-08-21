@@ -48,21 +48,24 @@ describe('Portfolio layout', () => {
     ).toBe(EXPECTED_MEDIA_FRAME_COUNT)
   })
 
-  it('clips Pennant video to the same frame radius as image media', () => {
+  it('clips Pennant video and image frames to the shared media radius', () => {
     render(<PortfolioPage />)
-    const video = screen
-      .getByTestId('media-block-pennant')
-      .querySelector('video') as HTMLVideoElement
+    const videoBlock = screen.getByTestId('media-block-pennant')
+    const video = videoBlock.querySelector('video') as HTMLVideoElement
+    expect(videoBlock).toHaveClass('media-frame', 'rounded-sm', 'overflow-hidden')
     expect(video).toHaveAttribute('src', '/project-media/PEN-01.webm')
     expect(video).toHaveAttribute('loop')
     expect(video.muted).toBe(true)
     expect(video).toHaveAttribute('playsinline')
     expect(video).toHaveAttribute('preload', 'metadata')
     expect(video).not.toHaveAttribute('autoplay')
-    expect(video).toHaveClass(
-      'rounded-sm',
-      '[clip-path:inset(0_round_var(--radius-sm))]',
-    )
+    expect(video).toHaveClass('rounded-[inherit]', 'object-cover')
+
+    const imageBlock = screen.getByTestId('media-block-pennant-1')
+    const image = imageBlock.querySelector('img') as HTMLImageElement
+    expect(imageBlock).toHaveClass('media-frame', 'rounded-sm', 'overflow-hidden')
+    expect(image).toHaveAttribute('src', '/project-media/PEN-02.webp')
+    expect(image).toHaveClass('rounded-[inherit]', 'object-cover')
   })
 
   it('places the project list before media in document order', () => {

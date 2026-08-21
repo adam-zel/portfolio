@@ -202,12 +202,30 @@ body {
   height: 0;
 }
 
+/*
+  Media frames: iOS/Safari often ignores overflow+radius on replaced content
+  (especially <video>). Force a composited clip so corners match rounded-sm.
+*/
+.media-frame {
+  transform: translateZ(0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  /* Literal rem matches --radius-sm (0.625rem * 0.6); vars inside clip-path
+     are unreliable on mobile WebKit. */
+  clip-path: inset(0 round 0.375rem);
+}
+
+.media-frame > img,
+.media-frame > video {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 .project-card {
+  /* Reveal stagger applies only to opacity/transform via --card-reveal-delay.
+     Color changes stay undelayed so theme swaps under Glimm read as one page. */
   transition:
-    opacity 380ms var(--ease-out),
-    transform 380ms var(--ease-out),
-    background-color 180ms var(--ease-out),
-    border-color 180ms var(--ease-out);
+    opacity 380ms var(--ease-out) var(--card-reveal-delay, 0ms),
+    transform 380ms var(--ease-out) var(--card-reveal-delay, 0ms);
 }
 
 .project-card--hidden {
@@ -225,7 +243,19 @@ body {
   transition-duration: 140ms;
 }
 
+/* Theme toggle — hover only on fine pointers (Emil: avoid sticky tap hover on touch) */
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover .theme-toggle-track {
+    filter: brightness(0.97);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .theme-toggle-track,
+  .theme-toggle-track > span {
+    transition-duration: 0ms !important;
+  }
+
   .project-card {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PROJECTS } from '@/data/projects'
+import { GlimmRoot } from '@/components/portfolio/GlimmRoot'
 import { LeftColumn } from '@/components/portfolio/LeftColumn'
 import { RightColumn } from '@/components/portfolio/RightColumn'
 import { useActiveProject } from '@/hooks/useActiveProject'
@@ -10,21 +11,18 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 type PortfolioPageProps = {
   forceDesktop?: boolean
   forceMobile?: boolean
-  forceBendOff?: boolean
   spotlightEnabled?: boolean
 }
 
 export function PortfolioPage({
   forceDesktop,
   forceMobile,
-  forceBendOff = false,
   spotlightEnabled = true,
 }: PortfolioPageProps = {}) {
   const [scrollRoot, setScrollRoot] = useState<HTMLElement | null>(null)
   const reducedMotion = usePrefersReducedMotion()
   const desktopQuery = useMediaQuery('(min-width: 768px)', Boolean(forceDesktop))
   const isDesktop = forceMobile ? false : forceDesktop ? true : desktopQuery
-  const useBend = isDesktop && !forceBendOff && !reducedMotion
 
   const { activeProjectId, selectProject } = useActiveProject({
     projects: PROJECTS,
@@ -45,18 +43,19 @@ export function PortfolioPage({
     : 'flex min-h-svh flex-col items-stretch'
 
   return (
-    <main data-testid="portfolio-page" className={layoutClass}>
-      <LeftColumn
-        projects={PROJECTS}
-        activeProjectId={activeProjectId}
-        revealedIds={revealedIds}
-        onSelectProject={selectProject}
-      />
-      <RightColumn
-        projects={PROJECTS}
-        onScrollRootChange={setScrollRoot}
-        useBend={useBend}
-      />
-    </main>
+    <GlimmRoot>
+      <main data-testid="portfolio-page" className={layoutClass}>
+        <LeftColumn
+          projects={PROJECTS}
+          activeProjectId={activeProjectId}
+          revealedIds={revealedIds}
+          onSelectProject={selectProject}
+        />
+        <RightColumn
+          projects={PROJECTS}
+          onScrollRootChange={setScrollRoot}
+        />
+      </main>
+    </GlimmRoot>
   )
 }

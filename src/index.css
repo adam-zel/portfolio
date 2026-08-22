@@ -10,11 +10,13 @@
   --color-ink: #26251e;
   --color-ink-muted: rgb(38 37 30 / 0.6);
   --color-card: #f2f1ed;
+  --color-card-active: #e6e5e0;
   --color-border: rgb(38 37 30 / 0.08);
   --color-logo: #dddddd;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color: var(--color-ink);
   background: var(--color-ground);
+  color-scheme: light;
   font-family:
     "SF Pro Text",
     "SF Pro Display",
@@ -130,6 +132,17 @@ body {
 }
 
 .dark {
+  /* Portfolio chrome — Paper HTV-0 (unlayered so these win over @theme / @layer) */
+  --color-ground: #14120b;
+  --color-ink: #edecec;
+  --color-ink-muted: rgb(237 236 236 / 0.6);
+  --color-card: #1b1913;
+  --color-card-active: #26241e;
+  --color-border: rgb(237 236 236 / 0.08);
+  color: var(--color-ink);
+  background: var(--color-ground);
+  color-scheme: dark;
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -189,12 +202,39 @@ body {
   height: 0;
 }
 
+/*
+  Media frames: iOS/Safari often ignores overflow, radius, and clip-path on
+  replaced <img> / <video>. Clip a wrapping non-replaced .media-clip instead;
+  keep a frame-level clip as backup. Literal rem matches --radius-sm (CSS
+  vars inside clip-path are unreliable on WebKit).
+*/
+.media-frame {
+  isolation: isolate;
+  transform: translateZ(0);
+  clip-path: inset(0 round 0.375rem);
+}
+
+.media-frame > .media-clip {
+  isolation: isolate;
+  transform: translateZ(0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  clip-path: inset(0 round 0.375rem);
+}
+
+.media-frame > .media-clip > img,
+.media-frame > .media-clip > video {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 .project-card {
+  /* Reveal stagger applies only to opacity/transform via --card-reveal-delay.
+     Color changes stay undelayed so theme swaps under Glimm read as one page. */
   transition:
-    opacity 380ms var(--ease-out),
-    transform 380ms var(--ease-out),
-    background-color 180ms var(--ease-out),
-    border-color 180ms var(--ease-out);
+    opacity 380ms var(--ease-out) var(--card-reveal-delay, 0ms),
+    transform 380ms var(--ease-out) var(--card-reveal-delay, 0ms);
 }
 
 .project-card--hidden {
@@ -212,7 +252,19 @@ body {
   transition-duration: 140ms;
 }
 
+/* Theme toggle — hover only on fine pointers (Emil: avoid sticky tap hover on touch) */
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover .theme-toggle-track {
+    filter: brightness(0.97);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .theme-toggle-track,
+  .theme-toggle-track > span {
+    transition-duration: 0ms !important;
+  }
+
   .project-card {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;

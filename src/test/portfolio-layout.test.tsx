@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
@@ -6,6 +6,9 @@ import { PROJECTS, projectMediaFrames } from '@/data/projects'
 import { PortfolioPage } from '@/components/portfolio/PortfolioPage'
 
 const EXPECTED_MEDIA_FRAME_COUNT = PROJECTS.flatMap(projectMediaFrames).length
+
+/** Matroska CodecID for AV1 — mobile Safari/WebKit cannot play AV1-in-WebM. */
+const WEBM_AV1_CODEC_ID = Buffer.from('V_AV1')
 
 describe('Portfolio layout', () => {
   it('ships a public file for every project logo and media path', () => {
@@ -16,6 +19,28 @@ describe('Portfolio layout', () => {
         const mediaPath = path.join(process.cwd(), 'public', src.replace(/^\//, ''))
         expect(existsSync(mediaPath), `missing ${src}`).toBe(true)
       }
+    }
+  })
+
+  it('uses Safari-playable codecs for portfolio WebM videos (no AV1-in-WebM)', () => {
+    const webms = PROJECTS.flatMap((project) =>
+      (project.media ?? project.images ?? []).filter((src) =>
+        src.toLowerCase().endsWith('.webm'),
+      ),
+    )
+    expect(webms.length).toBeGreaterThan(0)
+
+    for (const src of webms) {
+      const mediaPath = path.join(process.cwd(), 'public', src.replace(/^\//, ''))
+      const bytes = readFileSync(mediaPath)
+      expect(
+        bytes.includes(WEBM_AV1_CODEC_ID),
+        `${src} is AV1-in-WebM; mobile Safari cannot decode it — use VP8/VP9 WebM or H.264 MP4`,
+      ).toBe(false)
+      expect(
+        bytes.includes(Buffer.from('V_VP9')) || bytes.includes(Buffer.from('V_VP8')),
+        `${src} should be VP8 or VP9 WebM for mobile Safari`,
+      ).toBe(true)
     }
   })
 

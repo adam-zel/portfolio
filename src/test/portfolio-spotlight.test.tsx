@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mediaElementId } from '@/data/projects'
@@ -73,7 +73,7 @@ describe('Portfolio spotlight', () => {
   })
 
   it('defaults to the first project as active', () => {
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     expect(screen.getByTestId('project-card-programa')).toHaveAttribute(
       'aria-current',
       'true',
@@ -81,7 +81,7 @@ describe('Portfolio spotlight', () => {
   })
 
   it('marks the featured media project active and revealed when intersection updates', async () => {
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const observer = mediaObserver()
     expect(observer).toBeTruthy()
     observer!.trigger('pennant', 0.9)
@@ -101,7 +101,7 @@ describe('Portfolio spotlight', () => {
     const scrollIntoView = vi.fn()
     Element.prototype.scrollIntoView = scrollIntoView
 
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const media = document.getElementById(mediaElementId('pocket-casts'))
     expect(media).toBeTruthy()
 
@@ -119,7 +119,7 @@ describe('Portfolio spotlight', () => {
     const user = userEvent.setup()
     Element.prototype.scrollIntoView = vi.fn()
 
-    render(<PortfolioPage forceDesktop forceBendOff />)
+    render(<PortfolioPage forceDesktop />)
     const observer = mediaObserver()
     expect(observer).toBeTruthy()
 
@@ -137,6 +137,61 @@ describe('Portfolio spotlight', () => {
     )
     expect(screen.getByTestId('project-card-pennant')).not.toHaveAttribute(
       'aria-current',
+    )
+  })
+
+  it('keeps the later jump armed when cards are clicked in quick succession', async () => {
+    vi.useFakeTimers()
+    Element.prototype.scrollIntoView = vi.fn()
+
+    render(<PortfolioPage forceDesktop />)
+
+    fireEvent.click(screen.getByTestId('project-card-pocket-casts'))
+    await vi.advanceTimersByTimeAsync(400)
+    fireEvent.click(screen.getByTestId('project-card-skedulo'))
+    expect(screen.getByTestId('project-card-skedulo')).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+
+    // First jump's original settle deadline must not clear the second jump's lock.
+    await vi.advanceTimersByTimeAsync(400)
+
+    const observer = mediaObserver()
+    expect(observer).toBeTruthy()
+    observer!.trigger('pennant', 0.95)
+    expect(screen.getByTestId('project-card-skedulo')).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+    expect(screen.getByTestId('project-card-pennant')).not.toHaveAttribute(
+      'aria-current',
+    )
+  })
+
+  it('reconciles active project from ratios collected during a locked jump', async () => {
+    vi.useFakeTimers()
+    Element.prototype.scrollIntoView = vi.fn()
+
+    render(<PortfolioPage forceDesktop />)
+    const observer = mediaObserver()
+    expect(observer).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('project-card-pocket-casts'))
+    observer!.trigger('pocket-casts', 0)
+    observer!.trigger('skedulo', 0.9)
+    expect(screen.getByTestId('project-card-pocket-casts')).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(700)
+    })
+
+    expect(screen.getByTestId('project-card-skedulo')).toHaveAttribute(
+      'aria-current',
+      'true',
     )
   })
 })

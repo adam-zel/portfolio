@@ -1,6 +1,7 @@
 ---
 title: Portfolio spotlight must couple reveal with active scroll state
 date: 2026-08-09
+last_updated: 2026-08-20
 category: ui-bugs
 module: portfolio spotlight
 problem_type: ui_bug
@@ -43,7 +44,7 @@ The desktop portfolio spotlight coupled left-column card reveal with right-colum
 
 Three coordinated code fixes keep reveal, active selection, and programmatic scroll in lockstep. Wiring starts in `PortfolioPage`, which passes the current active id into reveal:
 
-```36:41:src/components/portfolio/PortfolioPage.tsx
+```33:38:src/components/portfolio/PortfolioPage.tsx
   const revealedIds = useCardReveal({
     projects: PROJECTS,
     activeProjectId,
@@ -90,9 +91,9 @@ Three coordinated code fixes keep reveal, active selection, and programmatic scr
 
 `LeftColumn` also treats the active project as revealed even if the set lags a frame:
 
-```37:40:src/components/portfolio/LeftColumn.tsx
+```56:59:src/components/portfolio/LeftColumn.tsx
             revealed={
-              revealedIds
+              staggerReveal
                 ? revealedIds.has(project.id) || project.id === activeProjectId
                 : true
             }
@@ -100,39 +101,34 @@ Three coordinated code fixes keep reveal, active selection, and programmatic scr
 
 **Before (click-jump — behavioral):** `selectProject` set the active id and called smooth `scrollIntoView` while the media observer continued updating from intermediate intersections.
 
-**After:** `useActiveProject` holds a `programmaticLockRef` for the selected id, ignores observer callbacks while the lock (or a disposed observer) is set, and clears the lock on `scrollend` or a 700ms settle timeout:
+**After:** `useActiveProject` holds a `programmaticLockRef` for the selected id, keeps updating intersection ratios while locked (but defers `pickBestProject` until unlock), and clears the lock on `scrollend` or a 700ms settle timeout. Rapid re-clicks cancel the prior settle timer / `scrollend` listener before arming the next jump (see the follow-on hardening doc linked below).
 
 ```11:11:src/hooks/useActiveProject.ts
 const PROGRAMMATIC_SCROLL_SETTLE_MS = 700
 ```
 
-```40:42:src/hooks/useActiveProject.ts
+```72:86:src/hooks/useActiveProject.ts
     const observer = new IntersectionObserver(
       (entries) => {
-        if (disposed || programmaticLockRef.current) return
+        if (disposed) return
+
+        for (const entry of entries) {
+          ratiosByElement.set(
+            entry.target,
+            entry.isIntersecting ? entry.intersectionRatio : 0,
+          )
+        }
+
+        // Keep ratios fresh during programmatic jumps; only defer selection.
+        if (!programmaticLockRef.current) {
+          pickBestProject()
+        }
+      },
 ```
 
-```85:125:src/hooks/useActiveProject.ts
-  const selectProject = (projectId: string) => {
-    programmaticLockRef.current = projectId
-    setActiveProjectId(projectId)
-    // ...
-    target.scrollIntoView({
-      behavior: reducedMotion ? 'auto' : 'smooth',
-      block: 'start',
-    })
-    // ...
-    scrollRoot.addEventListener('scrollend', onScrollEnd, { once: true })
-    settleTimerRef.current = setTimeout(() => {
-      scrollRoot.removeEventListener('scrollend', onScrollEnd)
-      clearLock()
-    }, PROGRAMMATIC_SCROLL_SETTLE_MS)
-  }
-```
+Cleanup sets `disposed = true` before disconnect so late IO callbacks cannot mutate state after teardown.
 
-Cleanup sets `disposed = true` before disconnect so late IO callbacks cannot mutate state after teardown (`src/hooks/useActiveProject.ts:79-82`).
-
-Regression coverage lives in `src/test/portfolio-spotlight.test.tsx`: media IO marks the featured card active and revealed; card click scrolls the matching media target; IO updates during an in-flight click-jump are ignored.
+Regression coverage lives in `src/test/portfolio-spotlight.test.tsx`: media IO marks the featured card active and revealed; card click scrolls the matching media target; IO selection is deferred during an in-flight click-jump; rapid clicks keep the later jump armed.
 
 ## Why This Works
 
@@ -141,17 +137,17 @@ Root cause is a coupling of **async_timing** and **logic_error**: two independen
 - `useLayoutEffect` runs before paint, so the initial left-column geometry pass can populate `revealedIds` (and the active-union effect can run) without a hidden-card flash.
 - Unioning `activeProjectId` into reveal and OR-ing it in the render path makes "featured" imply "visible and focusable," even when the card has never intersected the left fold.
 - Scrolling the active card into the left column with `behavior: 'auto'` keeps the featured row in the left viewport without introducing another smooth-scroll race.
-- The programmatic lock separates user intent (click) from scroll-driven observation until `scrollend` or the settle fallback, so intermediate media ratios cannot steal activation mid-jump.
+- The programmatic lock separates user intent (click) from scroll-driven *selection* until `scrollend` or the settle fallback, while ratios keep updating so unlock can reconcile from fresh data.
 - The `disposed` flag closes the classic "observer fired after unmount/effect cleanup" window for the same hook.
 
 ## Prevention
 
 - Keep spotlight selection and card reveal coupled at the API boundary: any owner of `activeProjectId` should pass it into reveal, and the list UI should treat active as revealed.
 - Prefer `useLayoutEffect` for first-paint visibility/geometry that must not flash unrevealed UI; reserve `useEffect` for work that can safely happen after paint.
-- Whenever calling smooth `scrollIntoView` that shares a root with an `IntersectionObserver` driving selection state, lock out observer writes until settle (`scrollend` + timeout fallback).
+- Whenever calling smooth `scrollIntoView` that shares a root with an `IntersectionObserver` driving selection state, defer selection until settle (`scrollend` + timeout fallback) but keep ratio maps fresh.
 - Always gate IO callbacks with a `disposed` (or equivalent) flag on cleanup when the callback closes over `setState`.
-- Preserve the spotlight regression tests in `src/test/portfolio-spotlight.test.tsx` — especially revealed-on-IO, click jump to the correct media target, and IO ignored during an in-flight click-jump.
+- Preserve the spotlight regression tests in `src/test/portfolio-spotlight.test.tsx` — especially revealed-on-IO, click jump to the correct media target, and selection deferred during an in-flight click-jump.
 
 ## Related Issues
 
-- None in `docs/solutions/` at capture time (first learning in this repo).
+- [Portfolio video autoplay and spotlight lock hardening](portfolio-video-autoplay-and-spotlight-lock-hardening.md) — viewport-gates media playback; hardens rapid `selectProject` cleanup and post-unlock ratio reconciliation.

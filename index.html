@@ -3,8 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adam Zelinski — Portfolio</title>
+    <meta
+      name="description"
+      content="Product design work from Adam Zelinski, Head of Design."
+    />
+    <link rel="canonical" href="https://adamzelinski.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://adamzelinski.com/" />
+    <meta property="og:title" content="Adam Zelinski — Portfolio" />
+    <meta
+      property="og:description"
+      content="Product design work from Adam Zelinski, Head of Design."
+    />
+    <meta property="og:image" content="https://adamzelinski.com/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Adam Zelinski" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Adam Zelinski — Portfolio" />
+    <meta
+      name="twitter:description"
+      content="Product design work from Adam Zelinski, Head of Design."
+    />
+    <meta name="twitter:image" content="https://adamzelinski.com/og-image.jpg" />
+    <meta name="twitter:image:alt" content="Adam Zelinski" />
+    <!--
+      Pre-paint appearance bootstrap.
+      Keep storage key, class name, and resolve rules in sync with src/lib/appearance.ts.
+      Inline only — ESM imports cannot run before first paint.
+    -->
+    <script>
+      ;(function () {
+        var STORAGE_KEY = 'portfolio-appearance-override'
+        var DARK_CLASS = 'dark'
+        var QUERY = '(prefers-color-scheme: dark)'
+        try {
+          var override = null
+          try {
+            var raw = sessionStorage.getItem(STORAGE_KEY)
+            if (raw === 'light' || raw === 'dark') override = raw
+          } catch (e) {}
+          var prefersDark = false
+          try {
+            prefersDark =
+              typeof matchMedia === 'function' && matchMedia(QUERY).matches
+          } catch (e) {}
+          var mode = override || (prefersDark ? 'dark' : 'light')
+          document.documentElement.classList.toggle(DARK_CLASS, mode === 'dark')
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
